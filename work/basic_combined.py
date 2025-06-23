@@ -6,6 +6,8 @@ from holidays import HOLIDAYS
 from psycopg2 import sql
 from config import DB_CONFIG
 import sys
+import calendar
+from holidays import MONTH, YEAR
 
 # 强制刷新输出缓冲区
 def flush_print(*args, **kwargs):
@@ -22,8 +24,10 @@ pd.set_option('display.min_rows', 50)       # 最少显示50行
 
 # 基础字段定义
 basic_fields = ['姓名', '考勤组', '部门', '工号', '职位', 'UserId']
+# 动态获取当月天数
+total_days = calendar.monthrange(YEAR, int(MONTH))[1]
 # 修改 day_columns 的定义，使用数字格式
-day_columns = [f"{i:02d}" for i in range(1, 32)]
+day_columns = [f"{i:02d}" for i in range(1, total_days + 1)]
 all_columns = basic_fields + day_columns
 
 # 打卡时间规则常量
@@ -352,4 +356,4 @@ def main():
         conn.close()
 
 if __name__ == "__main__":
-    main() 
+    main()
