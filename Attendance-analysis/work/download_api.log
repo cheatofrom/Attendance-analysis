@@ -1,0 +1,45 @@
+nohup: 忽略输入
+INFO:     Started server process [1666256]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8900 (Press CTRL+C to quit)
+INFO:     172.19.0.3:45564 - "POST /api/run-script HTTP/1.1" 200 OK
+INFO:     172.19.0.3:45564 - "GET /api/latest-file HTTP/1.1" 200 OK
+INFO:     192.168.1.172:51849 - "GET /api/download/%E8%80%83%E5%8B%A4%E6%98%8E%E7%BB%86%E5%8F%8A%E7%BB%9F%E8%AE%A1_20250726_113333.xlsx HTTP/1.1" 200 OK
+INFO:     172.19.0.3:41740 - "POST /api/run-script HTTP/1.1" 200 OK
+INFO:     172.19.0.3:41740 - "GET /api/latest-file HTTP/1.1" 200 OK
+INFO:     192.168.1.172:51963 - "GET /api/download/%E8%80%83%E5%8B%A4%E6%98%8E%E7%BB%86%E5%8F%8A%E7%BB%9F%E8%AE%A1_20250726_113711.xlsx HTTP/1.1" 200 OK
+INFO:     172.19.0.3:33252 - "POST /api/run-script HTTP/1.1" 200 OK
+INFO:     172.19.0.3:33252 - "GET /api/latest-file HTTP/1.1" 200 OK
+INFO:     192.168.1.172:55143 - "GET /api/download/%E8%80%83%E5%8B%A4%E6%98%8E%E7%BB%86%E5%8F%8A%E7%BB%9F%E8%AE%A1_20250726_113711.xlsx HTTP/1.1" 200 OK
+INFO:     172.19.0.3:49726 - "POST /api/run-script HTTP/1.1" 200 OK
+INFO:     172.19.0.3:49726 - "GET /api/latest-file HTTP/1.1" 200 OK
+INFO:     192.168.1.172:55377 - "GET /api/download/%E8%80%83%E5%8B%A4%E6%98%8E%E7%BB%86%E5%8F%8A%E7%BB%9F%E8%AE%A1_20250726_134107.xlsx HTTP/1.1" 200 OK
+INFO:     172.19.0.7:60652 - "POST /api/run-script HTTP/1.1" 200 OK
+INFO:     172.19.0.7:60652 - "GET /api/latest-file HTTP/1.1" 200 OK
+INFO:     192.168.1.135:52969 - "GET /api/download/%E8%80%83%E5%8B%A4%E6%98%8E%E7%BB%86%E5%8F%8A%E7%BB%9F%E8%AE%A1_20250804_135226.xlsx HTTP/1.1" 200 OK
+INFO:     192.168.1.172:62760 - "GET /api/download/%E8%80%83%E5%8B%A4%E6%98%8E%E7%BB%86%E5%8F%8A%E7%BB%9F%E8%AE%A1_20250804_135226.xlsx HTTP/1.1" 200 OK
+INFO:     172.19.0.7:41556 - "POST /api/run-script HTTP/1.1" 200 OK
+INFO:     172.19.0.7:41556 - "GET /api/latest-file HTTP/1.1" 200 OK
+INFO:     192.168.1.172:53207 - "GET /api/download/%E8%80%83%E5%8B%A4%E6%98%8E%E7%BB%86%E5%8F%8A%E7%BB%9F%E8%AE%A1_20250806_104338.xlsx HTTP/1.1" 200 OK
+INFO:     172.19.0.7:50338 - "POST /api/run-script HTTP/1.1" 200 OK
+INFO:     172.19.0.7:50338 - "GET /api/latest-file HTTP/1.1" 200 OK
+INFO:     192.168.1.172:49895 - "GET /api/download/%E8%80%83%E5%8B%A4%E6%98%8E%E7%BB%86%E5%8F%8A%E7%BB%9F%E8%AE%A1_20250806_110549.xlsx HTTP/1.1" 200 OK
+INFO:     172.19.0.7:36454 - "POST /api/run-script HTTP/1.1" 200 OK
+INFO:     172.19.0.7:36454 - "GET /api/latest-file HTTP/1.1" 200 OK
+INFO:     192.168.1.172:50494 - "GET /api/download/%E8%80%83%E5%8B%A4%E6%98%8E%E7%BB%86%E5%8F%8A%E7%BB%9F%E8%AE%A1_20250806_111304.xlsx HTTP/1.1" 200 OK
+INFO:     172.19.0.7:49518 - "POST /api/run-script HTTP/1.1" 200 OK
+INFO:     172.19.0.7:49518 - "GET /api/latest-file HTTP/1.1" 200 OK
+INFO:     192.168.1.172:52415 - "GET /api/download/%E8%80%83%E5%8B%A4%E6%98%8E%E7%BB%86%E5%8F%8A%E7%BB%9F%E8%AE%A1_20250806_114406.xlsx HTTP/1.1" 200 OK
+INFO:     172.19.0.7:51440 - "POST /api/run-script HTTP/1.1" 200 OK
+INFO:     172.19.0.7:51440 - "GET /api/latest-file HTTP/1.1" 200 OK
+INFO:     192.168.1.172:52931 - "GET /api/download/%E8%80%83%E5%8B%A4%E6%98%8E%E7%BB%86%E5%8F%8A%E7%BB%9F%E8%AE%A1_20250806_114901.xlsx HTTP/1.1" 200 OK
+INFO:     172.19.0.7:38562 - "POST /api/run-script HTTP/1.1" 200 OK
+INFO:     172.19.0.7:38562 - "GET /api/latest-file HTTP/1.1" 200 OK
+INFO:     192.168.1.172:53482 - "GET /api/download/%E8%80%83%E5%8B%A4%E6%98%8E%E7%BB%86%E5%8F%8A%E7%BB%9F%E8%AE%A1_20250806_115451.xlsx HTTP/1.1" 200 OK
+INFO:     172.19.0.7:43046 - "POST /api/run-script HTTP/1.1" 200 OK
+INFO:     172.19.0.7:43046 - "GET /api/latest-file HTTP/1.1" 200 OK
+INFO:     192.168.1.172:64885 - "GET /api/download/%E8%80%83%E5%8B%A4%E6%98%8E%E7%BB%86%E5%8F%8A%E7%BB%9F%E8%AE%A1_20250806_123839.xlsx HTTP/1.1" 200 OK
+INFO:     172.19.0.7:37948 - "POST /api/run-script HTTP/1.1" 200 OK
+INFO:     172.19.0.7:37948 - "GET /api/latest-file HTTP/1.1" 200 OK
+INFO:     192.168.1.172:50197 - "GET /api/download/%E8%80%83%E5%8B%A4%E6%98%8E%E7%BB%86%E5%8F%8A%E7%BB%9F%E8%AE%A1_20250806_130419.xlsx HTTP/1.1" 200 OK

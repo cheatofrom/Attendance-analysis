@@ -1,0 +1,20 @@
+nohup: 忽略输入
+INFO:     Started server process [1661698]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8901 (Press CTRL+C to quit)
+INFO:     127.0.0.1:36786 - "POST /upload HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:36572 - "POST /upload HTTP/1.1" 422 Unprocessable Entity
+INFO:     172.19.0.3:60690 - "POST /upload HTTP/1.1" 200 OK
+INFO:     172.19.0.3:54012 - "POST /upload HTTP/1.1" 200 OK
+INFO:     172.19.0.3:41246 - "POST /upload HTTP/1.1" 200 OK
+INFO:     172.19.0.3:48636 - "POST /upload HTTP/1.1" 200 OK
+INFO:     172.19.0.7:48350 - "POST /upload HTTP/1.1" 200 OK
+INFO:     172.19.0.7:60920 - "POST /upload HTTP/1.1" 200 OK
+INFO:     172.19.0.7:34736 - "POST /upload HTTP/1.1" 200 OK
+INFO:     172.19.0.7:35170 - "POST /upload HTTP/1.1" 200 OK
+INFO:     172.19.0.7:37208 - "POST /upload HTTP/1.1" 200 OK
+INFO:     172.19.0.7:35954 - "POST /upload HTTP/1.1" 200 OK
+INFO:     172.19.0.7:32836 - "POST /upload HTTP/1.1" 200 OK
+INFO:     172.19.0.7:43440 - "POST /upload HTTP/1.1" 200 OK
+INFO:     172.19.0.7:53428 - "POST /upload HTTP/1.1" 200 OK

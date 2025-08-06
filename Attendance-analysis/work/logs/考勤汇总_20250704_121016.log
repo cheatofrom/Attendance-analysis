@@ -1,0 +1,19 @@
+/home/dell/mnt/ai-work/Attendance-analysis/work/attendance_summary.py:137: UserWarning: pandas only supports SQLAlchemy connectable (engine/connection) or database string URI or sqlite3 DBAPI2 connection. Other DBAPI2 objects are not tested. Please consider using SQLAlchemy.
+  df = pd.read_sql_query(query, conn)
+✅ 考勤明细及统计已导出到: output/考勤明细及统计_20250704_121032.xlsx
+
+📊 考勤统计概览:
+总人数: 162
+应出勤天数: 23
+平均实际出勤天数: 16.6
+
+各类情况汇总:
+正常次数: 2116.0
+迟到次数: 150.0
+早退次数: 30.0
+缺卡次数: 1031.0
+旷工次数: 45.0
+出差次数: 438.0
+请假次数: 97.0
+
+✅ 统计完成
