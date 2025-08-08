@@ -27,8 +27,7 @@ def get_overwork_records(conn):
                    加班时长小时, 
                    加班说明, 
                    申请状态, 
-                   数据来源,
-                   伙伴
+                   数据来源
             FROM overwork
             WHERE 申请状态 IN ('已同意', '审批通过')
             ORDER BY 姓名, 开始时间
@@ -38,7 +37,7 @@ def get_overwork_records(conn):
     finally:
         cursor.close()
 
-def update_attendance_for_overtime(cursor, name, date, overtime_hours, source, partners=''):
+def update_attendance_for_overtime(cursor, name, date, overtime_hours, source):
     """更新考勤记录中的加班信息"""
     try:
         # 获取该员工在该日期的考勤记录
@@ -100,7 +99,6 @@ def process_cached_records(cursor):
                 end_time = record[4]   # end_time 在第5列
                 duration = record[5]   # duration 在第6列
                 source = record[10]    # source 在第11列
-                partners = record[11] if len(record) > 11 else ''  # 伙伴信息在第12列（如果存在）
                 
                 flush_print(f"正在处理缓存的 {name} 的加班记录: {start_time} -> {end_time}")
                 
@@ -113,32 +111,20 @@ def process_cached_records(cursor):
                 current_month = int(MONTH)
                 
                 # 确定要处理的日期
-                if start_date.month == current_month:
+                # 由于我们现在只缓存下个月的部分，所以缓存记录的开始日期应该是当前月的第一天
+                # 直接处理开始日期
+                if start_date.month == current_month and start_date.day == 1:
                     process_date = start_date
-                elif end_date.month == current_month:
-                    process_date = end_date
                 else:
-                    # 当前月既不是开始月也不是结束月，不处理
+                    # 如果不是当前月的第一天，说明缓存记录有问题，跳过处理
+                    flush_print(f"⚠️ 缓存的加班记录开始日期不是当前月第一天: {name} {start_time}，跳过处理")
                     continue
                 
                 # 解析时长
                 overtime_hours = float(duration.replace('小时', '').replace('h', ''))
                 
-                # 更新发起人的考勤记录
+                # 更新考勤记录
                 update_attendance_for_overtime(cursor, name, process_date, overtime_hours, source)
-                
-                # 如果有伙伴信息，也为伙伴更新加班记录
-                if partners:
-                    # 分割伙伴名单
-                    partner_list = partners.split(',')
-                    flush_print(f"📝 缓存记录包含伙伴: {partners}")
-                    
-                    # 为每个伙伴更新考勤记录
-                    for partner in partner_list:
-                        partner = partner.strip()  # 去除可能的空格
-                        if partner and partner != name:  # 确保伙伴名不为空且不是发起人自己
-                            flush_print(f"📝 为伙伴 {partner} 添加缓存加班记录")
-                            update_attendance_for_overtime(cursor, partner, process_date, overtime_hours, source)
                 
                 # 标记为已处理
                 mark_record_as_processed(conn, record_id)
@@ -162,8 +148,8 @@ def process_overtime_records():
         # 先处理缓存的跨月记录
         process_cached_records(cursor)
         
-        # 获取所有加班记录，包括伙伴信息
-        cursor.execute("SELECT 姓名, 开始时间, 结束时间, 加班时长小时, 数据来源, 加班说明, 申请状态, 伙伴 FROM overwork")
+        # 获取所有加班记录
+        cursor.execute("SELECT 姓名, 开始时间, 结束时间, 加班时长小时, 数据来源, 加班说明, 申请状态 FROM overwork")
         overwork_records = cursor.fetchall()
         
         flush_print(f"✅ 获取到 {len(overwork_records)} 条加班记录")
@@ -171,7 +157,7 @@ def process_overtime_records():
         # 处理每条加班记录
         for record in overwork_records:
             try:
-                name, start_time, end_time, duration, source, reason, status, partners = record
+                name, start_time, end_time, duration, source, reason, status = record
                 
                 # 解析时间
                 start_date = datetime.strptime(start_time.split()[0], '%Y-%m-%d')
@@ -186,14 +172,16 @@ def process_overtime_records():
                 
                 # 确定要处理的日期
                 if is_cross_month:
-                    if start_date.month == current_month:
-                        # 当前月是开始月，处理开始日期
+                    # 如果开始日期是当前月的第一天，说明这是从缓存中取出的记录
+                    # 直接处理开始日期
+                    if start_date.month == current_month and start_date.day == 1:
                         process_date = start_date
-                    elif end_date.month == current_month:
-                        # 当前月是结束月，处理结束日期
-                        process_date = end_date
+                    # 如果开始日期的月份是当前月，处理开始日期
+                    elif start_date.month == current_month:
+                        process_date = start_date
+                    # 如果结束日期的月份是当前月，但开始日期不是当前月，不处理
+                    # 这种情况会在下个月处理（通过缓存）
                     else:
-                        # 当前月既不是开始月也不是结束月，不处理
                         flush_print(f"⚠️ 检测到跨月加班记录: {name} {start_time} -> {end_time}，将在缓存阶段处理")
                         continue
                 else:
@@ -203,21 +191,8 @@ def process_overtime_records():
                 # 解析时长
                 overtime_hours = float(duration.replace('小时', '').replace('h', ''))
                 
-                # 更新发起人的考勤记录
+                # 更新考勤记录
                 update_attendance_for_overtime(cursor, name, process_date, overtime_hours, source)
-                
-                # 如果有伙伴信息，也为伙伴更新加班记录
-                if partners:
-                    # 分割伙伴名单
-                    partner_list = partners.split(',')
-                    flush_print(f"📝 发现加班记录包含伙伴: {partners}")
-                    
-                    # 为每个伙伴更新考勤记录
-                    for partner in partner_list:
-                        partner = partner.strip()  # 去除可能的空格
-                        if partner and partner != name:  # 确保伙伴名不为空且不是发起人自己
-                            flush_print(f"📝 为伙伴 {partner} 添加加班记录")
-                            update_attendance_for_overtime(cursor, partner, process_date, overtime_hours, source)
                 
             except Exception as e:
                 flush_print(f"❌ 处理加班记录时出错: {e}")

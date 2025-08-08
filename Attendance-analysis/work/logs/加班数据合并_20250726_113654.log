@@ -1,6 +1,0 @@
-/home/dell/miniconda3/envs/dd/lib/python3.10/site-packages/openpyxl/styles/stylesheet.py:237: UserWarning: Workbook contains no default style, apply openpyxl's default
-  warn("Workbook contains no default style, apply openpyxl's default")
-飞书数据记录数: 22
-钉钉数据记录数: 217
-合并后筛选06月份总记录数: 232
-数据已成功导入PostgreSQL数据库的overwork表

@@ -16,7 +16,7 @@ def get_db_connection():
     return psycopg2.connect(**DB_CONFIG)
 
 def save_freework_to_cache(conn, record):
-    """将跨月请假记录保存到缓存表"""
+    """将跨月请假记录保存到缓存表，只缓存下个月的部分（从下个月1号开始）"""
     cursor = conn.cursor()
     try:
         name, start_time, end_time, duration, reason, status, leave_type, source = record
@@ -26,13 +26,29 @@ def save_freework_to_cache(conn, record):
         end_date = datetime.strptime(end_time.split()[0], '%Y-%m-%d')
         
         if start_date.month != end_date.month:
-            # 插入到缓存表
+            # 修改开始时间为下个月1号
+            next_month_first_day = datetime(end_date.year, end_date.month, 1)
+            next_month_start_time = f"{next_month_first_day.strftime('%Y-%m-%d')} 上午"
+            
+            # 检查是否已存在相同的记录，避免重复插入
+            check_query = """
+                SELECT COUNT(*) FROM cross_month_cache 
+                WHERE record_type = 'freework' AND name = %s AND start_time = %s AND end_time = %s
+            """
+            cursor.execute(check_query, (name, next_month_start_time, end_time))
+            record_count = cursor.fetchone()[0]
+            
+            if record_count > 0:
+                flush_print(f"⚠️ 跨月请假记录已存在，跳过缓存: {name} {next_month_start_time} -> {end_time}")
+                return False
+            
+            # 插入到缓存表，使用修改后的开始时间
             cursor.execute("""
                 INSERT INTO cross_month_cache 
                 (record_type, name, start_time, end_time, duration, reason, status, type, source)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, ('freework', name, start_time, end_time, duration, reason, status, leave_type, source))
-            flush_print(f"✅ 已将 {name} 的跨月请假记录缓存: {start_time} -> {end_time}")
+            """, ('freework', name, next_month_start_time, end_time, duration, reason, status, leave_type, source))
+            flush_print(f"✅ 已将 {name} 的跨月请假记录缓存: {next_month_start_time} -> {end_time}")
             return True
         return False
     except Exception as e:
@@ -42,7 +58,7 @@ def save_freework_to_cache(conn, record):
         cursor.close()
 
 def save_business_to_cache(conn, record):
-    """将跨月出差记录保存到缓存表"""
+    """将跨月出差记录保存到缓存表，只缓存下个月的部分（从下个月1号开始）"""
     cursor = conn.cursor()
     try:
         name, start_time, end_time, duration, reason, status, colleagues_raw1, colleagues_raw2, colleagues, source = record
@@ -52,13 +68,29 @@ def save_business_to_cache(conn, record):
         end_date = datetime.strptime(end_time.split()[0], '%Y-%m-%d')
         
         if start_date.month != end_date.month:
-            # 插入到缓存表
+            # 修改开始时间为下个月1号
+            next_month_first_day = datetime(end_date.year, end_date.month, 1)
+            next_month_start_time = f"{next_month_first_day.strftime('%Y-%m-%d')} 上午"
+            
+            # 检查是否已存在相同的记录，避免重复插入
+            check_query = """
+                SELECT COUNT(*) FROM cross_month_cache 
+                WHERE record_type = 'business' AND name = %s AND start_time = %s AND end_time = %s
+            """
+            cursor.execute(check_query, (name, next_month_start_time, end_time))
+            record_count = cursor.fetchone()[0]
+            
+            if record_count > 0:
+                flush_print(f"⚠️ 跨月出差记录已存在，跳过缓存: {name} {next_month_start_time} -> {end_time}")
+                return False
+            
+            # 插入到缓存表，使用修改后的开始时间
             cursor.execute("""
                 INSERT INTO cross_month_cache 
                 (record_type, name, start_time, end_time, duration, reason, status, colleagues, source)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, ('business', name, start_time, end_time, duration, reason, status, colleagues, source))
-            flush_print(f"✅ 已将 {name} 的跨月出差记录缓存: {start_time} -> {end_time}")
+            """, ('business', name, next_month_start_time, end_time, duration, reason, status, colleagues, source))
+            flush_print(f"✅ 已将 {name} 的跨月出差记录缓存: {next_month_start_time} -> {end_time}")
             return True
         return False
     except Exception as e:
@@ -68,7 +100,7 @@ def save_business_to_cache(conn, record):
         cursor.close()
 
 def save_overwork_to_cache(conn, record):
-    """将跨月加班记录保存到缓存表"""
+    """将跨月加班记录保存到缓存表，只缓存下个月的部分（从下个月1号开始）"""
     cursor = conn.cursor()
     try:
         name, start_time, end_time, duration, reason, status, source = record
@@ -78,13 +110,29 @@ def save_overwork_to_cache(conn, record):
         end_date = datetime.strptime(end_time.split()[0], '%Y-%m-%d')
         
         if start_date.month != end_date.month:
-            # 插入到缓存表
+            # 修改开始时间为下个月1号
+            next_month_first_day = datetime(end_date.year, end_date.month, 1)
+            next_month_start_time = f"{next_month_first_day.strftime('%Y-%m-%d')} 上午"
+            
+            # 检查是否已存在相同的记录，避免重复插入
+            check_query = """
+                SELECT COUNT(*) FROM cross_month_cache 
+                WHERE record_type = 'overwork' AND name = %s AND start_time = %s AND end_time = %s
+            """
+            cursor.execute(check_query, (name, next_month_start_time, end_time))
+            record_count = cursor.fetchone()[0]
+            
+            if record_count > 0:
+                flush_print(f"⚠️ 跨月加班记录已存在，跳过缓存: {name} {next_month_start_time} -> {end_time}")
+                return False
+            
+            # 插入到缓存表，使用修改后的开始时间
             cursor.execute("""
                 INSERT INTO cross_month_cache 
                 (record_type, name, start_time, end_time, duration, reason, status, source)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, ('overwork', name, start_time, end_time, duration, reason, status, source))
-            flush_print(f"✅ 已将 {name} 的跨月加班记录缓存: {start_time} -> {end_time}")
+            """, ('overwork', name, next_month_start_time, end_time, duration, reason, status, source))
+            flush_print(f"✅ 已将 {name} 的跨月加班记录缓存: {next_month_start_time} -> {end_time}")
             return True
         return False
     except Exception as e:
@@ -126,10 +174,8 @@ def get_cached_records(conn, record_type=None):
             end_date = datetime.strptime(end_time.split()[0], '%Y-%m-%d')
             
             # 检查记录是否与当前月份相关
-            # 1. 开始日期的月份是上个月，结束日期的月份是当前月
-            # 2. 开始日期的月份是当前月，结束日期的月份是下个月
-            if (start_date.month == current_month - 1 and end_date.month == current_month) or \
-               (start_date.month == current_month and end_date.month == current_month + 1):
+            # 由于我们现在只缓存下个月的部分，所以只需要检查开始日期是否为当前月份的第一天
+            if start_date.month == current_month and start_date.day == 1:
                 filtered_records.append(record)
         
         return filtered_records

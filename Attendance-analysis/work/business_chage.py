@@ -32,17 +32,22 @@ def update_attendance_record(cursor, name, start_date, end_date, business_reason
     start_date = datetime.strptime(start_date.split()[0], '%Y-%m-%d')
     end_date = datetime.strptime(end_date.split()[0], '%Y-%m-%d')
     
-    # 检查是否跨月
-    is_cross_month = start_date.month != end_date.month
-    
-    # 如果跨月，只处理当前月份的部分
+    # 获取当前月份
     from holidays import MONTH
     current_month = int(MONTH)
     
+    # 检查是否跨月
+    is_cross_month = start_date.month != end_date.month
+    
     # 获取需要更新的列名（第X天）
     if is_cross_month:
-        if start_date.month == current_month:
-            # 当前月是开始月，处理从开始日到月底
+        # 如果开始日期是当前月的第一天，说明这是从缓存中取出的记录
+        # 直接处理从开始日到结束日的部分
+        if start_date.month == current_month and start_date.day == 1:
+            start_day = 1
+            end_day = int(end_date.strftime('%d'))
+        # 如果开始日期的月份是当前月，处理从开始日到月底
+        elif start_date.month == current_month:
             start_day = int(start_date.strftime('%d'))
             # 获取当月最后一天
             if current_month in [1, 3, 5, 7, 8, 10, 12]:
@@ -51,12 +56,9 @@ def update_attendance_record(cursor, name, start_date, end_date, business_reason
                 end_day = 30
             else:  # 2月
                 end_day = 29 if start_date.year % 4 == 0 and (start_date.year % 100 != 0 or start_date.year % 400 == 0) else 28
-        elif end_date.month == current_month:
-            # 当前月是结束月，处理从月初到结束日
-            start_day = 1
-            end_day = int(end_date.strftime('%d'))
+        # 如果结束日期的月份是当前月，但开始日期不是当前月，不处理
+        # 这种情况会在下个月处理（通过缓存）
         else:
-            # 当前月既不是开始月也不是结束月，不处理
             return
     else:
         # 不跨月，正常处理
@@ -87,17 +89,22 @@ def update_colleague_attendance(cursor, name, start_date, end_date, business_rea
     start_date = datetime.strptime(start_date.split()[0], '%Y-%m-%d')
     end_date = datetime.strptime(end_date.split()[0], '%Y-%m-%d')
     
-    # 检查是否跨月
-    is_cross_month = start_date.month != end_date.month
-    
-    # 如果跨月，只处理当前月份的部分
+    # 获取当前月份
     from holidays import MONTH
     current_month = int(MONTH)
     
+    # 检查是否跨月
+    is_cross_month = start_date.month != end_date.month
+    
     # 获取需要更新的列名（第X天）
     if is_cross_month:
-        if start_date.month == current_month:
-            # 当前月是开始月，处理从开始日到月底
+        # 如果开始日期是当前月的第一天，说明这是从缓存中取出的记录
+        # 直接处理从开始日到结束日的部分
+        if start_date.month == current_month and start_date.day == 1:
+            start_day = 1
+            end_day = int(end_date.strftime('%d'))
+        # 如果开始日期的月份是当前月，处理从开始日到月底
+        elif start_date.month == current_month:
             start_day = int(start_date.strftime('%d'))
             # 获取当月最后一天
             if current_month in [1, 3, 5, 7, 8, 10, 12]:
@@ -106,12 +113,9 @@ def update_colleague_attendance(cursor, name, start_date, end_date, business_rea
                 end_day = 30
             else:  # 2月
                 end_day = 29 if start_date.year % 4 == 0 and (start_date.year % 100 != 0 or start_date.year % 400 == 0) else 28
-        elif end_date.month == current_month:
-            # 当前月是结束月，处理从月初到结束日
-            start_day = 1
-            end_day = int(end_date.strftime('%d'))
+        # 如果结束日期的月份是当前月，但开始日期不是当前月，不处理
+        # 这种情况会在下个月处理（通过缓存）
         else:
-            # 当前月既不是开始月也不是结束月，不处理
             return
     else:
         # 不跨月，正常处理
@@ -182,14 +186,27 @@ def process_cached_records(cursor):
             
             print(f"正在处理缓存的 {name} 的出差记录: {start_time} -> {end_time}")
             
-            # 更新发起人的考勤记录
-            update_attendance_record(cursor, name, start_time, end_time, reason, colleagues)
-            
-            # 处理同行人的考勤记录
-            process_colleagues(cursor, name, start_time, end_time, reason, colleagues)
-            
-            # 标记为已处理
-            mark_record_as_processed(conn, record_id)
+            # 验证开始日期是否为当前月的第一天
+            try:
+                start_date = datetime.strptime(start_time.split()[0], '%Y-%m-%d')
+                from holidays import MONTH
+                current_month = int(MONTH)
+                
+                if start_date.month == current_month and start_date.day == 1:
+                    # 更新发起人的考勤记录
+                    update_attendance_record(cursor, name, start_time, end_time, reason, colleagues)
+                    
+                    # 处理同行人的考勤记录
+                    process_colleagues(cursor, name, start_time, end_time, reason, colleagues)
+                    
+                    # 标记为已处理
+                    mark_record_as_processed(conn, record_id)
+                else:
+                    print(f"⚠️ 缓存的出差记录开始日期不是当前月第一天: {name} {start_time}，跳过处理")
+                    continue
+            except Exception as e:
+                print(f"❌ 处理缓存出差记录失败: {e}")
+                continue
         
         print("✅ 所有缓存的跨月出差记录处理完成")
         
@@ -228,6 +245,24 @@ def main():
                 
                 if start_date.month != end_date.month:
                     print(f"⚠️ 检测到跨月出差记录: {name} {start_time} -> {end_time}，将在缓存阶段处理")
+                    # 导入缓存模块并保存跨月记录
+                    try:
+                        from cross_month_cache import save_business_to_cache
+                        # 构建完整的记录
+                        duration = f"{(end_date - start_date).days + 1}天"
+                        status = "已通过"
+                        colleagues_raw1 = colleagues if colleagues else ""
+                        colleagues_raw2 = ""
+                        source = "钉钉"
+                        
+                        # 保存到缓存表
+                        full_record = (name, start_time, end_time, duration, reason, status, colleagues_raw1, colleagues_raw2, colleagues, source)
+                        save_business_to_cache(conn, full_record)
+                        print(f"✅ 已将跨月出差记录缓存: {name} {start_time} -> {end_time}")
+                    except ImportError:
+                        print("⚠️ 未找到缓存模块，无法缓存跨月记录")
+                    except Exception as e:
+                        print(f"❌ 缓存跨月出差记录时出错: {e}")
             except Exception as e:
                 print(f"❌ 检查跨月记录时出错: {e}")
         

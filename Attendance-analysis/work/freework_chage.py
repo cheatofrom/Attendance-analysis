@@ -43,17 +43,23 @@ def update_attendance_record(cursor, name, start_date, end_date, leave_reason, d
         start_date = datetime.strptime(start_time_parts[0], '%Y-%m-%d')
         end_date = datetime.strptime(end_time_parts[0], '%Y-%m-%d')
         
-        # 检查是否跨月
-        is_cross_month = start_date.month != end_date.month
-        
-        # 如果跨月，只处理当前月份的部分
+        # 获取当前月份
         from holidays import MONTH
         current_month = int(MONTH)
         
         # 获取需要更新的列名（第X天）
+        # 检查是否跨月
+        is_cross_month = start_date.month != end_date.month
+        
+        # 如果是跨月记录，只处理当前月份的部分
         if is_cross_month:
-            if start_date.month == current_month:
-                # 当前月是开始月，处理从开始日到月底
+            # 如果开始日期是当前月的第一天，说明这是从缓存中取出的记录
+            # 直接处理从开始日到结束日的部分
+            if start_date.month == current_month and start_date.day == 1:
+                start_day = 1
+                end_day = int(end_date.strftime('%d'))
+            # 如果开始日期的月份是当前月，处理从开始日到月底
+            elif start_date.month == current_month:
                 start_day = int(start_date.strftime('%d'))
                 # 获取当月最后一天
                 if current_month in [1, 3, 5, 7, 8, 10, 12]:
@@ -62,12 +68,9 @@ def update_attendance_record(cursor, name, start_date, end_date, leave_reason, d
                     end_day = 30
                 else:  # 2月
                     end_day = 29 if start_date.year % 4 == 0 and (start_date.year % 100 != 0 or start_date.year % 400 == 0) else 28
-            elif end_date.month == current_month:
-                # 当前月是结束月，处理从月初到结束日
-                start_day = 1
-                end_day = int(end_date.strftime('%d'))
+            # 如果结束日期的月份是当前月，但开始日期不是当前月，不处理
+            # 这种情况会在下个月处理（通过缓存）
             else:
-                # 当前月既不是开始月也不是结束月，不处理
                 return
         else:
             # 不跨月，正常处理
@@ -143,11 +146,20 @@ def process_cached_records(cursor):
             
             print(f"正在处理缓存的 {name} 的请假记录: {start_time} -> {end_time}")
             
-            # 更新考勤记录
+            # 验证开始日期是否为当前月的第一天
             try:
-                update_attendance_record(cursor, name, start_time, end_time, reason, duration, source, leave_type)
-                # 标记为已处理
-                mark_record_as_processed(conn, record_id)
+                start_date = datetime.strptime(start_time.split()[0], '%Y-%m-%d')
+                from holidays import MONTH
+                current_month = int(MONTH)
+                
+                if start_date.month == current_month and start_date.day == 1:
+                    # 更新考勤记录
+                    update_attendance_record(cursor, name, start_time, end_time, reason, duration, source, leave_type)
+                    # 标记为已处理
+                    mark_record_as_processed(conn, record_id)
+                else:
+                    print(f"⚠️ 缓存的请假记录开始日期不是当前月第一天: {name} {start_time}，跳过处理")
+                    continue
             except Exception as e:
                 print(f"❌ 处理缓存记录失败: {e}")
                 continue
@@ -186,6 +198,16 @@ def main():
                     
                     if start_date.month != end_date.month:
                         print(f"⚠️ 检测到跨月请假记录: {name} {start_time} -> {end_time}，将在下月处理")
+                        # 导入缓存模块并保存跨月记录
+                        try:
+                            from cross_month_cache import save_freework_to_cache
+                            # 构建完整的记录信息
+                            record = (name, start_time, end_time, duration, reason, "已批准", leave_type, source)
+                            save_freework_to_cache(conn, record)
+                        except ImportError:
+                            print("⚠️ 未找到缓存模块，无法缓存跨月记录")
+                        except Exception as e:
+                            print(f"❌ 缓存跨月记录时出错: {e}")
                 except Exception as e:
                     print(f"❌ 检查跨月记录时出错: {e}")
             except Exception as e:
