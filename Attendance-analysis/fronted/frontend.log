@@ -1,0 +1,25 @@
+
+> attendance-analysis-frontend@0.0.0 dev
+> vite
+
+Port 3000 is in use, trying another one...
+
+  VITE v5.4.19  ready in 132 ms
+
+  ➜  Local:   http://localhost:3001/
+  ➜  Network: http://192.168.1.66:3001/
+  ➜  Network: http://172.29.0.1:3001/
+  ➜  Network: http://172.19.0.1:3001/
+  ➜  Network: http://172.25.0.1:3001/
+  ➜  Network: http://172.23.0.1:3001/
+  ➜  Network: http://172.17.0.1:3001/
+  ➜  Network: http://172.20.0.1:3001/
+  ➜  Network: http://172.31.0.1:3001/
+  ➜  Network: http://172.18.0.1:3001/
+  ➜  press h + enter to show help
+11:44:56 [vite] vite.config.ts changed, restarting server...
+11:44:56 [vite] server restarted.
+11:46:27 [vite] vite.config.ts changed, restarting server...
+11:46:27 [vite] server restarted.
+11:46:27 [vite] vite.config.ts changed, restarting server...
+11:46:27 [vite] server restarted.

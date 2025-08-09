@@ -110,19 +110,15 @@ async def process_record_async(record, i, total_records):
     # 构建提示词
     prompt = f"{name} {start_date.strftime('%Y-%m-%d')} {start_time_only} {end_date.strftime('%Y-%m-%d')} {end_time_only} {duration} {reason} {data_source}"
     
-    print(f"\n开始处理第 {i+1}/{total_records} 条记录")
-    print(f"Prompt: {prompt}")
-    print(f"数据来源: {data_source}")
-    
     # 调用LLM处理
     response = await query_llm_async(prompt)
     
     if not response:
         print(f"第 {i+1} 条记录获取响应失败")
         return None
-        
-    print(f"第 {i+1} 条记录处理完成，回答：", response)
-    
+    print(prompt)
+    print(f"第 {i+1} 条记录处理完成，处理结果：\n", response)
+    print("----------------------------------------------------------------------")
     # 解析LLM响应
     # 预期格式: "姓名,日期,时间范围,时长"
     # 例如: "丁国涛,2025-07-09,18:32-19:44,1.2"
@@ -165,7 +161,7 @@ async def process_record_async(record, i, total_records):
                     'data_source': data_source
                 })
                 
-                print(f"已解析: {parsed_name}, {parsed_date}, {parsed_time}, {cleaned_duration}, 加班说明: {prompt}, {data_source}")
+                # print(f"已解析: {parsed_name}, {parsed_date}, {parsed_time}, {cleaned_duration}, 加班说明: {prompt}, {data_source}")
             except ValueError as e:
                 print(f"时长转换错误: {e}, 原始值: '{parsed_duration}'")
         
@@ -294,7 +290,7 @@ async def process_db_data_async(max_concurrent=10):
             print(f"  - {source}: {count} 条记录")
             
         # 打印结果表中的数据统计
-        print("\n结果表数据统计:")
+        
         async with await get_db_pool() as pool:
             async with pool.acquire() as conn:
                 async with conn.cursor() as cursor:
@@ -330,19 +326,20 @@ async def query_results():
                         print("结果表中没有数据")
                         return
                     
-                    print(f"\n查询到 {len(results)} 条结果:")
-                    print("-" * 120)
-                    print(f"{'姓名':<10} {'日期':<12} {'时间':<15} {'时长':<8} {'加班说明':<30} {'来源':<10}")
-                    print("-" * 120)
-                    
-                    for row in results:
-                        # 截断过长的加班说明
-                        reason = row['加班说明']
-                        if reason and len(reason) > 27:
-                            reason = reason[:27] + '...'
-                        print(f"{row['姓名']:<10} {row['日期']:<12} {row['时间']:<15} {row['时长']:<8} {reason:<30} {row['来源']:<10}")
-                    
-                    print("-" * 120)
+                    print(f"\n查询到 {len(results)} 条结果")
+                    # 注释掉详细表格输出，避免在日志中显示大量表格数据
+                    # print("-" * 120)
+                    # print(f"{'姓名':<10} {'日期':<12} {'时间':<15} {'时长':<8} {'加班说明':<30} {'来源':<10}")
+                    # print("-" * 120)
+                    # 
+                    # for row in results:
+                    #     # 截断过长的加班说明
+                    #     reason = row['加班说明']
+                    #     if reason and len(reason) > 27:
+                    #         reason = reason[:27] + '...'
+                    #     print(f"{row['姓名']:<10} {row['日期']:<12} {row['时间']:<15} {row['时长']:<8} {reason:<30} {row['来源']:<10}")
+                    # 
+                    # print("-" * 120)
     except Exception as e:
         print(f"查询结果出错: {e}")
 

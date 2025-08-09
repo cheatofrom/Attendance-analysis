@@ -8,6 +8,10 @@ import os
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'work'))
 from config import DB_CONFIG
 import holidays
+from logger_utils import create_logger
+
+# 初始化日志记录器
+logger = create_logger('overwork_change_ai')
 
 # 强制刷新输出缓冲区
 def flush_print(*args, **kwargs):
@@ -17,13 +21,21 @@ def flush_print(*args, **kwargs):
 
 def get_db_connection():
     """创建数据库连接"""
-    return psycopg2.connect(**DB_CONFIG)
+    logger.log_database_operation("正在建立数据库连接", "database")
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        logger.log_info("数据库连接建立成功")
+        return conn
+    except Exception as e:
+        logger.log_error(f"数据库连接失败: {e}")
+        raise
 
 def get_llm_records(conn):
     """获取LLM处理后的加班记录"""
+    logger.log_database_operation("查询LLM处理后的加班记录", "llm_results")
     cursor = conn.cursor()
     try:
-        cursor.execute("""
+        query = """
             SELECT 姓名, 
                    日期, 
                    时间, 
@@ -32,29 +44,45 @@ def get_llm_records(conn):
                    来源
             FROM llm_results
             ORDER BY 姓名, 日期
-        """)
+        """
+        logger.log_progress("数据库查询", "执行LLM记录查询SQL")
+        cursor.execute(query)
         records = cursor.fetchall()
+        
+        logger.log_info(f"成功查询到 {len(records)} 条LLM处理后的加班记录")
+        logger.log_data_processing(f"记录详情: 包含 {len(set(r[0] for r in records))} 个员工的加班数据")
+        
         return records
+    except Exception as e:
+        logger.log_error(f"查询LLM记录失败: {e}")
+        raise
     finally:
         cursor.close()
 
 def update_attendance_for_overtime(cursor, name, date, overtime_hours, source, reason=""):
     """更新考勤记录中的加班信息"""
+    logger.log_database_operation(f"更新员工 {name} 的考勤记录", "attendance_result")
+    
     try:
         # 获取该员工在该日期的考勤记录
+        logger.log_progress("考勤更新", f"查询员工 {name} 的考勤记录")
         cursor.execute("SELECT * FROM attendance_result WHERE 姓名 = %s", (name,))
         employee_record = cursor.fetchone()
         
         if not employee_record:
-            flush_print(f"❌ 未找到员工 {name} 的记录")
+            logger.log_error(f"未找到员工 {name} 的考勤记录")
             return
         
+        logger.log_info(f"找到员工 {name} 的考勤记录")
+        
         # 获取列名
+        logger.log_progress("考勤更新", "获取考勤表列结构")
         cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name = 'attendance_result' ORDER BY ordinal_position")
         columns = [col[0] for col in cursor.fetchall()]
         
         # 创建列名到索引的映射
         col_index_map = {col: i for i, col in enumerate(columns)}
+        logger.log_data_processing(f"考勤表包含 {len(columns)} 个字段")
         
         # 将日期字符串转换为datetime对象
         if isinstance(date, str):
@@ -67,9 +95,12 @@ def update_attendance_for_overtime(cursor, name, date, overtime_hours, source, r
         
         # 构建更新语句
         day_column = f"第{date_obj.day}天"
+        logger.log_progress("考勤更新", f"准备更新 {day_column} 字段")
+        
         if day_column in col_index_map:
             # 获取当前值
             current_value = employee_record[col_index_map[day_column]]
+            logger.log_data_processing(f"当前 {day_column} 值: {current_value}")
             
             # 构建新的值，加入加班说明并用花括号包围
             reason_text = f"{{{reason}}}" if reason else ""
@@ -78,18 +109,25 @@ def update_attendance_for_overtime(cursor, name, date, overtime_hours, source, r
             else:
                 new_value = f"{source}加班({overtime_hours}h){reason_text}"
             
+            logger.log_data_processing(f"新的 {day_column} 值: {new_value}")
+            
             # 更新记录
             update_query = f"UPDATE attendance_result SET \"{day_column}\" = %s WHERE 姓名 = %s"
+            logger.log_progress("考勤更新", f"执行更新SQL: {update_query}")
             cursor.execute(update_query, (new_value, name))
-            flush_print(f"✅ 已更新 {name} 在 {date_obj.date()} 的考勤记录：{new_value}")
+            
+            logger.log_info(f"✅ 成功更新 {name} 在 {date_obj.date()} 的考勤记录")
+            logger.log_data_processing(f"更新内容: {new_value}")
         else:
-            flush_print(f"❌ 未找到 {name} 在 {date_obj.date()} 的考勤记录")
+            logger.log_error(f"未找到对应的日期字段 {day_column}")
             
     except Exception as e:
-        flush_print(f"❌ 更新考勤记录时出错: {e}")
+        logger.log_error(f"更新考勤记录时出错: {e}")
 
 def process_llm_records():
     """处理LLM生成的加班记录，更新考勤结果"""
+    logger.start_step("处理LLM加班记录")
+    
     conn = get_db_connection()
     cursor = conn.cursor()
     
@@ -97,12 +135,22 @@ def process_llm_records():
         # 获取所有LLM处理后的加班记录
         llm_records = get_llm_records(conn)
         
-        flush_print(f"✅ 获取到 {len(llm_records)} 条LLM处理后的加班记录")
+        logger.log_info(f"开始处理 {len(llm_records)} 条LLM加班记录")
+        
+        # 统计变量
+        processed_count = 0
+        skipped_count = 0
+        success_count = 0
+        error_count = 0
         
         # 处理每条加班记录
-        for record in llm_records:
+        for i, record in enumerate(llm_records):
             try:
+                current_progress = ((i + 1) / len(llm_records)) * 100
+                logger.log_progress("LLM记录处理", f"[{i+1}/{len(llm_records)}] ({current_progress:.1f}%) 处理记录")
+                
                 name, date_str, time_range, duration, reason, source = record
+                logger.log_data_processing(f"处理员工: {name}, 日期: {date_str}, 时长: {duration}h, 来源: {source}")
                 
                 # 解析日期
                 if isinstance(date_str, str):
@@ -119,27 +167,55 @@ def process_llm_records():
                 
                 # 只处理当前月份的记录
                 if date_obj.month != current_month:
-                    flush_print(f"⚠️ 跳过非当前月份的记录: {name} {date_str}")
+                    logger.log_info(f"跳过非当前月份({current_month})的记录: {name} {date_str}")
+                    skipped_count += 1
                     continue
                 
                 # 更新考勤记录
                 update_attendance_for_overtime(cursor, name, date_obj, duration, source, reason)
+                success_count += 1
+                processed_count += 1
+                
+                logger.log_progress("LLM记录处理", f"✓ 成功处理 {name} 的加班记录")
                 
             except Exception as e:
-                flush_print(f"❌ 处理LLM加班记录时出错: {e}")
+                error_count += 1
+                logger.log_error(f"处理LLM加班记录时出错: {e}")
+                logger.log_data_processing(f"错误记录: {record}")
         
+        # 提交事务
+        logger.log_database_operation("提交数据库事务", "attendance_result")
         conn.commit()
-        flush_print("✅ 考勤记录更新完成")
+        
+        # 输出处理统计
+        logger.log_info(f"LLM记录处理完成统计:")
+        logger.log_info(f"  - 总记录数: {len(llm_records)}")
+        logger.log_info(f"  - 成功处理: {success_count}")
+        logger.log_info(f"  - 跳过记录: {skipped_count}")
+        logger.log_info(f"  - 错误记录: {error_count}")
+        
+        success_rate = (success_count / len(llm_records)) * 100 if llm_records else 0
+        logger.complete_step("处理LLM加班记录", f"✓ 处理完成 (成功率: {success_rate:.1f}%)")
         
     except Exception as e:
-        flush_print(f"❌ 程序执行出错: {e}")
+        logger.log_error(f"程序执行出错: {e}")
+        logger.log_database_operation("回滚数据库事务", "attendance_result")
         conn.rollback()
+        logger.complete_step("处理LLM加班记录", f"✗ 处理失败: {e}")
     finally:
         cursor.close()
         conn.close()
+        logger.log_database_operation("数据库连接已关闭", "database")
 
 def main():
-    process_llm_records()
+    logger.start_script("考勤加班记录更新器")
+    
+    try:
+        process_llm_records()
+        logger.finish_script("考勤加班记录更新器", "✓ 脚本执行完成")
+    except Exception as e:
+        logger.log_error(f"脚本执行失败: {e}")
+        logger.finish_script("考勤加班记录更新器", f"✗ 脚本执行失败: {e}")
 
 if __name__ == "__main__":
     main()

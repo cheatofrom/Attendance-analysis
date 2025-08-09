@@ -136,10 +136,10 @@ declare -a scripts=(
     "cross_month_cache.py:跨月记录缓存"
     "basic_combined.py:基础数据合并"
     "business_combine.py:业务数据合并"
-    "freework_combine.py:自由工作数据合并"
+    "freework_combine.py:请假数据合并"
     "overwork_combine.py:加班数据合并"
     "business_chage.py:业务数据变更"
-    "freework_chage.py:自由工作数据变更"
+    "freework_chage.py:请假数据变更"
     "overwork_chage.py:加班数据变更"
     "attendance_summary.py:考勤汇总"
 )

@@ -11,7 +11,7 @@ import uvicorn
 app = FastAPI(title="简单文件上传API", version="1.0.0")
 
 # 目标目录
-UPLOAD_DIR = "/home/dell/mnt/ai-work/Attendance-analysis/data/original"
+UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'original')
 
 @app.post("/upload")
 async def upload_files(
@@ -78,4 +78,4 @@ async def root():
     return {"message": "简单文件上传API", "endpoint": "/upload"}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8901) 
+    uvicorn.run(app, host="0.0.0.0", port=8901)

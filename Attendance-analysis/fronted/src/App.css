@@ -1,0 +1,66 @@
+/* App specific styles */
+.app-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.header {
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  color: white;
+  padding: 24px;
+  text-align: center;
+}
+
+.content-wrapper {
+  padding: 24px;
+}
+
+.section-card {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  margin-bottom: 24px;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.section-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+  background: #fafafa;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e8e8e8;
+  font-weight: 600;
+  font-size: 16px;
+  color: #262626;
+}
+
+.section-content {
+  padding: 24px;
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 10px;
+  }
+  
+  .header h1 {
+    font-size: 24px;
+  }
+  
+  .content-wrapper {
+    padding: 16px;
+  }
+}

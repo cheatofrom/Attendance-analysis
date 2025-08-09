@@ -42,6 +42,7 @@ required_files=(
     "process_db_async.py"
     "overwork_chage_ai.py"
     "attendance_summary.py"
+    "export_llm_results.py"
     "config.py"
     "holidays.py"
     "../data/original/basic.xlsx"
@@ -137,13 +138,14 @@ declare -a scripts=(
     "cross_month_cache.py:跨月记录缓存"
     "basic_combined.py:基础数据合并"
     "business_combine.py:业务数据合并"
-    "freework_combine.py:自由工作数据合并"
+    "freework_combine.py:加班数据合并"
     "overwork_combine.py:加班数据合并"
-    "business_chage.py:业务数据变更"
-    "freework_chage.py:自由工作数据变更"
+    "business_chage.py:出差数据变更"
+    "freework_chage.py:加班数据变更"
     "process_db_async.py:加班数据异步处理"
     "overwork_chage_ai.py:AI加班数据变更"
     "attendance_summary.py:考勤汇总"
+    "export_llm_results.py:导出AI处理结果"
 )
 
 total_steps=${#scripts[@]}
@@ -186,6 +188,7 @@ if [ "$overall_success" = true ]; then
     echo "🎉 所有脚本执行成功!"
     echo "📊 考勤分析完整流程已完成"
     echo "✅ 数据已成功处理并保存到数据库"
+    echo "📁 AI处理结果已导出到output目录"
 else
     echo "❌ 部分脚本执行失败"
     echo "📋 请检查上述错误信息和日志文件"

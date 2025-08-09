@@ -7,12 +7,16 @@
 
 import os
 import subprocess
+import signal
 from datetime import datetime
 from typing import Dict, Any, List
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 import uvicorn
 import glob
+import threading
 
 app = FastAPI(
     title="考勤分析系统 API",
@@ -20,64 +24,121 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# 全局变量存储脚本执行状态
+# 添加CORS中间件
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 在生产环境中应该设置具体的域名
+    allow_credentials=True,
+    allow_methods=["*"],  # 允许所有HTTP方法，包括OPTIONS
+    allow_headers=["*"],
+)
+
+# 请求模型
+class RunScriptRequest(BaseModel):
+    ai_agent_enabled: bool = False
+
+# 全局变量存储脚本执行状态和进程信息
 script_status = {
     'is_running': False,
     'start_time': None,
     'end_time': None,
     'exit_code': None,
     'output': '',
-    'error': ''
+    'error': '',
+    'interrupted': False
 }
 
-def run_script():
+# 存储当前运行的进程
+current_process = None
+process_lock = threading.Lock()
+
+def run_script(ai_agent_enabled=False):
     """执行脚本并返回结果"""
-    global script_status
+    global script_status, current_process
     
-    script_status['is_running'] = True
-    script_status['start_time'] = datetime.now().isoformat()
-    script_status['output'] = ''
-    script_status['error'] = ''
+    with process_lock:
+        script_status['is_running'] = True
+        script_status['start_time'] = datetime.now().isoformat()
+        script_status['output'] = ''
+        script_status['error'] = ''
+        script_status['interrupted'] = False
     
     try:
-        # 获取脚本的绝对路径
-        script_path = os.path.join(os.path.dirname(__file__), 'run_all_scripts.sh')
+        # 根据AI agent选择决定使用哪个脚本
+        script_name = 'run_all_scripts02.sh' if ai_agent_enabled else 'run_all_scripts.sh'
+        script_path = os.path.join(os.path.dirname(__file__), script_name)
         
         # 确保脚本有执行权限
         os.chmod(script_path, 0o755)
         
         # 执行脚本
-        process = subprocess.Popen(
-            ['bash', script_path],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            cwd=os.path.dirname(__file__)
-        )
+        with process_lock:
+            current_process = subprocess.Popen(
+                ['bash', script_path],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                cwd=os.path.dirname(__file__),
+                preexec_fn=os.setsid,  # 创建新的进程组，便于终止子进程
+                bufsize=1,  # 行缓冲
+                universal_newlines=True
+            )
         
-        # 获取输出
-        stdout, stderr = process.communicate()
+        # 实时读取输出
+        output_lines = []
+        error_lines = []
         
-        script_status['output'] = stdout
-        if stderr:
-            script_status['error'] = stderr
+        # 使用线程来实时读取stdout和stderr
+        def read_stdout():
+            for line in iter(current_process.stdout.readline, ''):
+                if line:
+                    with process_lock:
+                        output_lines.append(line)
+                        script_status['output'] = ''.join(output_lines)
         
-        # 获取退出代码
-        exit_code = process.returncode
-        script_status['exit_code'] = exit_code
-        script_status['end_time'] = datetime.now().isoformat()
-        script_status['is_running'] = False
+        def read_stderr():
+            for line in iter(current_process.stderr.readline, ''):
+                if line:
+                    with process_lock:
+                        error_lines.append(line)
+                        script_status['error'] = ''.join(error_lines)
         
-        if exit_code == 0:
+        # 启动读取线程
+        stdout_thread = threading.Thread(target=read_stdout)
+        stderr_thread = threading.Thread(target=read_stderr)
+        stdout_thread.daemon = True
+        stderr_thread.daemon = True
+        stdout_thread.start()
+        stderr_thread.start()
+        
+        # 等待进程完成
+        exit_code = current_process.wait()
+        
+        # 等待读取线程完成
+        stdout_thread.join(timeout=1)
+        stderr_thread.join(timeout=1)
+        
+        with process_lock:
+            # 获取退出代码
+            script_status['exit_code'] = exit_code
+            script_status['end_time'] = datetime.now().isoformat()
+            script_status['is_running'] = False
+            current_process = None
+        
+        if script_status['interrupted']:
+            return False, "脚本执行被用户中断"
+        elif exit_code == 0:
             return True, "脚本执行成功"
         else:
             return False, f"脚本执行失败，退出代码: {exit_code}"
             
     except Exception as e:
-        script_status['error'] = str(e)
-        script_status['end_time'] = datetime.now().isoformat()
-        script_status['is_running'] = False
-        script_status['exit_code'] = -1
+        with process_lock:
+            script_status['error'] = str(e)
+            script_status['end_time'] = datetime.now().isoformat()
+            script_status['is_running'] = False
+            script_status['exit_code'] = -1
+            current_process = None
         return False, f"执行脚本时发生异常: {e}"
 
 @app.post("/api/run-script")
@@ -107,8 +168,8 @@ async def run_basic_combined() -> Dict[str, Any]:
         )
 
 @app.post("/api/run-script-async")
-async def run_script_async() -> Dict[str, Any]:
-    """在后台异步启动 run_all_scripts.sh 脚本"""
+async def run_script_async(request: RunScriptRequest = RunScriptRequest()) -> Dict[str, Any]:
+    """在后台异步启动脚本"""
     global script_status
     
     if script_status['is_running']:
@@ -117,15 +178,19 @@ async def run_script_async() -> Dict[str, Any]:
             detail="脚本正在运行中，请稍后再试"
         )
     
+    # 获取AI agent启用状态
+    ai_agent_enabled = request.ai_agent_enabled
+    
     # 启动后台线程执行脚本
     import threading
-    thread = threading.Thread(target=run_script)
+    thread = threading.Thread(target=run_script, args=(ai_agent_enabled,))
     thread.daemon = True
     thread.start()
     
+    script_type = "AI增强脚本" if ai_agent_enabled else "标准脚本"
     return {
         "success": True,
-        "message": "脚本已启动，正在后台执行",
+        "message": f"{script_type}已启动，正在后台执行",
         "status": script_status
     }
 
@@ -137,11 +202,76 @@ async def get_script_status() -> Dict[str, Any]:
         "status": script_status
     }
 
+@app.post("/api/stop-script")
+async def stop_script() -> Dict[str, Any]:
+    """停止正在运行的脚本"""
+    global script_status, current_process
+    
+    with process_lock:
+        if not script_status['is_running']:
+            raise HTTPException(
+                status_code=400,
+                detail="没有正在运行的脚本"
+            )
+        
+        if current_process is None:
+            raise HTTPException(
+                status_code=400,
+                detail="无法找到正在运行的进程"
+            )
+        
+        try:
+            # 标记为中断状态
+            script_status['interrupted'] = True
+            
+            # 终止进程组（包括所有子进程）
+            os.killpg(os.getpgid(current_process.pid), signal.SIGTERM)
+            
+            # 等待进程结束，最多等待5秒
+            try:
+                current_process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                # 如果5秒后还没结束，强制杀死
+                os.killpg(os.getpgid(current_process.pid), signal.SIGKILL)
+                current_process.wait()
+            
+            # 更新状态
+            script_status['is_running'] = False
+            script_status['end_time'] = datetime.now().isoformat()
+            script_status['exit_code'] = -2  # 特殊退出代码表示被中断
+            script_status['error'] = '脚本执行被用户中断'
+            current_process = None
+            
+            return {
+                "success": True,
+                "message": "脚本已成功停止",
+                "status": script_status
+            }
+            
+        except ProcessLookupError:
+            # 进程已经不存在
+            script_status['is_running'] = False
+            script_status['end_time'] = datetime.now().isoformat()
+            script_status['exit_code'] = -2
+            current_process = None
+            
+            return {
+                "success": True,
+                "message": "脚本已停止（进程已结束）",
+                "status": script_status
+            }
+            
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"停止脚本时发生错误: {str(e)}"
+            )
+
 @app.get("/api/files")
 async def get_output_files() -> Dict[str, Any]:
     """获取输出目录中的所有文件"""
     try:
-        output_dir = os.path.join(os.path.dirname(__file__), 'output')
+        output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'work', 'output')
         
         if not os.path.exists(output_dir):
             return {
@@ -185,7 +315,7 @@ async def get_output_files() -> Dict[str, Any]:
 async def download_file(filename: str):
     """下载指定的输出文件"""
     try:
-        output_dir = os.path.join(os.path.dirname(__file__), 'output')
+        output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'work', 'output')
         file_path = os.path.join(output_dir, filename)
         
         # 安全检查：确保文件在输出目录内
@@ -215,11 +345,55 @@ async def download_file(filename: str):
             detail=f"下载文件失败: {str(e)}"
         )
 
+@app.delete("/api/delete/{filename}")
+async def delete_file(filename: str) -> Dict[str, Any]:
+    """删除指定的输出文件"""
+    try:
+        output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'work', 'output')
+        file_path = os.path.join(output_dir, filename)
+        
+        # 安全检查：确保文件在输出目录内
+        if not os.path.abspath(file_path).startswith(os.path.abspath(output_dir)):
+            raise HTTPException(
+                status_code=400,
+                detail="无效的文件路径"
+            )
+        
+        # 检查文件是否存在
+        if not os.path.exists(file_path):
+            raise HTTPException(
+                status_code=404,
+                detail=f"文件 {filename} 不存在"
+            )
+        
+        # 检查是否为文件（不是目录）
+        if not os.path.isfile(file_path):
+            raise HTTPException(
+                status_code=400,
+                detail=f"{filename} 不是一个有效的文件"
+            )
+        
+        # 删除文件
+        os.remove(file_path)
+        
+        return {
+            "success": True,
+            "message": f"文件 {filename} 已成功删除"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"删除文件失败: {str(e)}"
+        )
+
 @app.get("/api/latest-file")
 async def get_latest_file() -> Dict[str, Any]:
     """获取最新的输出文件"""
     try:
-        output_dir = os.path.join(os.path.dirname(__file__), 'output')
+        output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'work', 'output')
         
         if not os.path.exists(output_dir):
             return {
@@ -268,9 +442,11 @@ async def root():
         "endpoints": {
             "POST /api/run-script": "启动考勤分析脚本（同步执行，等待完成）",
             "POST /api/run-script-async": "启动考勤分析脚本（异步执行，后台运行）",
+            "POST /api/stop-script": "停止正在运行的脚本",
             "GET /api/script-status": "获取脚本执行状态",
             "GET /api/files": "获取所有输出文件列表",
             "GET /api/download/{filename}": "下载指定的输出文件",
+            "DELETE /api/delete/{filename}": "删除指定的输出文件",
             "GET /api/latest-file": "获取最新的输出文件"
         }
     }
