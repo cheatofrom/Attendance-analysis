@@ -128,7 +128,15 @@ const ProcessControl: React.FC<ProcessControlProps> = ({
       const batchText = batch.join('')
       
       setLogQueue(prev => prev.slice(batchSize))
-      setDisplayLogs(prev => prev + batchText)
+      
+      // 限制显示日志的长度，防止超出JavaScript字符串长度限制
+      const maxDisplayLength = 100 * 1024; // 100KB
+      setDisplayLogs(prev => {
+        const combined = prev + batchText;
+        return combined.length > maxDisplayLength ?
+          combined.slice(combined.length - maxDisplayLength) :
+          combined;
+      })
     }
   }
 
@@ -146,13 +154,33 @@ const ProcessControl: React.FC<ProcessControlProps> = ({
 
   // 处理新日志，添加到队列而非直接更新
   const handleNewLogs = (newLogs: string) => {
-    if (newLogs.length > lastProcessedLogLength.current) {
-      const newContent = newLogs.slice(lastProcessedLogLength.current)
+    // 限制处理的日志长度，防止超出JavaScript字符串长度限制
+    const maxLength = 500 * 1024; // 500KB
+    const safeNewLogs = newLogs.length > maxLength ? 
+      newLogs.slice(newLogs.length - maxLength) : 
+      newLogs;
+    
+    // 如果日志长度超过限制，重置处理位置
+    if (newLogs.length > maxLength && lastProcessedLogLength.current > maxLength) {
+      lastProcessedLogLength.current = 0;
+      const infoMsg = '[系统] 日志过长，已截断旧日志\n';
+      setLogQueue(prev => [infoMsg, ...prev.slice(0, 100)]);
+    }
+    
+    if (safeNewLogs.length > lastProcessedLogLength.current) {
+      const newContent = safeNewLogs.slice(lastProcessedLogLength.current)
       const lines = newContent.split('\n').filter(line => line.trim())
       
       if (lines.length > 0) {
-        setLogQueue(prev => [...prev, ...lines.map(line => line + '\n')])
-        lastProcessedLogLength.current = newLogs.length
+        // 限制队列长度，防止内存占用过大
+        const maxQueueLength = 1000;
+        setLogQueue(prev => {
+          const newQueue = [...prev, ...lines.map(line => line + '\n')];
+          return newQueue.length > maxQueueLength ? 
+            newQueue.slice(newQueue.length - maxQueueLength) : 
+            newQueue;
+        });
+        lastProcessedLogLength.current = safeNewLogs.length;
       }
     }
   }
@@ -165,18 +193,40 @@ const ProcessControl: React.FC<ProcessControlProps> = ({
       
       setProcessStatus(status)
       
-      if (status.output && status.output !== processLogs) {
-        handleNewLogs(status.output)
-        onLogUpdate(status.output)
-        
-        // 分析日志内容来更新进度和当前步骤
-        analyzeLogProgress(status.output)
+      if (status.output) {
+        // 检查输出长度，防止超出JavaScript字符串长度限制
+        const maxOutputLength = 500 * 1024; // 500KB
+        const safeOutput = status.output.length > maxOutputLength ?
+          status.output.slice(status.output.length - maxOutputLength) :
+          status.output;
+          
+        if (safeOutput !== processLogs) {
+          handleNewLogs(safeOutput)
+          
+          // 限制传递给父组件的日志长度
+          const maxParentLogLength = 100 * 1024; // 100KB
+          const safeParentLog = safeOutput.length > maxParentLogLength ?
+            safeOutput.slice(safeOutput.length - maxParentLogLength) :
+            safeOutput;
+            
+          onLogUpdate(safeParentLog)
+          
+          // 分析日志内容来更新进度和当前步骤
+          analyzeLogProgress(safeOutput)
+        }
       }
       
       if (status.error) {
         const errorMsg = `\n[错误] ${status.error}`
         setLogQueue(prev => [...prev, errorMsg])
-        onLogUpdate(processLogs + errorMsg)
+        
+        // 限制错误日志长度
+        const maxErrorLength = 10 * 1024; // 10KB
+        const safeError = errorMsg.length > maxErrorLength ?
+          errorMsg.slice(errorMsg.length - maxErrorLength) :
+          errorMsg;
+          
+        onLogUpdate(processLogs.length > 0 ? processLogs + safeError : safeError)
       }
       
       // 如果脚本完成，停止轮询

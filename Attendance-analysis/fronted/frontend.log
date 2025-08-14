@@ -23,3 +23,13 @@ Port 3000 is in use, trying another one...
 11:46:27 [vite] server restarted.
 11:46:27 [vite] vite.config.ts changed, restarting server...
 11:46:27 [vite] server restarted.
+17:35:39 [vite] hmr update /src/App.tsx
+17:35:39 [vite] hmr update /src/App.tsx
+17:35:52 [vite] hmr update /src/components/ProcessControl.tsx
+17:35:52 [vite] hmr update /src/components/ProcessControl.tsx
+17:36:02 [vite] hmr update /src/App.tsx
+17:36:03 [vite] hmr update /src/components/ProcessControl.tsx
+17:36:16 [vite] hmr update /src/components/ProcessControl.tsx
+17:36:16 [vite] hmr update /src/components/ProcessControl.tsx
+09:33:05 [vite] hmr update /src/components/FileDownload.tsx
+09:33:06 [vite] hmr update /src/components/FileDownload.tsx

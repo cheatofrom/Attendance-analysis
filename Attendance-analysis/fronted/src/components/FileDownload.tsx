@@ -97,14 +97,8 @@ const FileDownload: React.FC<FileDownloadProps> = ({ refreshTrigger }) => {
   const handleDelete = async (file: FileInfo) => {
     setDeleting(file.name)
     try {
-      const response = await fetch(`http://localhost:8900/api/delete/${encodeURIComponent(file.name)}`, {
-        method: 'DELETE',
-      })
-      
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.detail || '删除失败')
-      }
+      // 使用axios保持与其他API请求一致的基础URL配置
+      const response = await axios.delete(`/api/delete/${encodeURIComponent(file.name)}`)
       
       message.success(`文件 ${file.name} 删除成功`)
       // 删除成功后刷新文件列表

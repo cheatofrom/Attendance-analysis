@@ -41,7 +41,23 @@ function App() {
   }
 
   const handleLogUpdate = (log: string) => {
-    setProcessLogs(prev => prev + log + '\n')
+    // 限制日志字符串长度，防止超出JavaScript字符串长度限制
+    // 保留最新的100KB日志内容
+    const maxLength = 100 * 1024; // 100KB
+    let newLog = log;
+    
+    if (log.length > maxLength) {
+      // 如果单次日志超过限制，只保留末尾部分
+      newLog = log.slice(log.length - maxLength);
+    }
+    
+    setProcessLogs(prev => {
+      const combined = prev + newLog + '\n';
+      // 如果组合后的日志超过限制，只保留末尾部分
+      return combined.length > maxLength ? 
+        combined.slice(combined.length - maxLength) : 
+        combined;
+    });
   }
 
   const canStartProcess = uploadedFiles.length === 7 && configData !== null

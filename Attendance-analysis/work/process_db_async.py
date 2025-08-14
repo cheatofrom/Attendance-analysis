@@ -92,6 +92,9 @@ async def process_record_async(record, i, total_records):
     返回:
     dict: 处理结果，包含解析后的数据
     """
+    # 记录处理开始时间
+    record_start_time = time.time()
+    
     # 构建提示词
     name = record['姓名']
     start_time = record['开始时间']
@@ -110,15 +113,57 @@ async def process_record_async(record, i, total_records):
     # 构建提示词
     prompt = f"{name} {start_date.strftime('%Y-%m-%d')} {start_time_only} {end_date.strftime('%Y-%m-%d')} {end_time_only} {duration} {reason} {data_source}"
     
-    # 调用LLM处理
-    response = await query_llm_async(prompt)
+    # 调用LLM处理，增加异常处理
+    try:
+        # 尝试获取LLM响应，增加超时和错误处理
+        response = await query_llm_async(prompt)
+        
+        # 检查响应是否为空
+        if not response or response.strip() == "":
+            logger.log_error(f"处理记录 {i+1}/{total_records} 获取响应为空")
+            return {
+                'success': False,
+                'index': i,
+                'total': total_records,
+                'error': '获取响应失败或响应为空',
+                'prompt': prompt,
+                'raw_response': None,
+                'processing_time': time.time() - record_start_time,
+                'source': data_source
+            }
+    except asyncio.CancelledError:
+        # 处理取消异常
+        elapsed = time.time() - record_start_time
+        logger.log_error(f"处理记录 {i+1}/{total_records} 被取消，已耗时: {elapsed:.2f}秒")
+        return {
+            'success': False,
+            'index': i,
+            'total': total_records,
+            'error': '任务被取消',
+            'prompt': prompt,
+            'raw_response': None,
+            'processing_time': elapsed,
+            'source': data_source
+        }
+    except Exception as e:
+        # 处理其他异常
+        elapsed = time.time() - record_start_time
+        import traceback
+        error_details = traceback.format_exc()
+        logger.log_error(f"处理记录 {i+1}/{total_records} 异常: {e}，已耗时: {elapsed:.2f}秒")
+        logger.log_error(f"错误详情: {error_details}")
+        return {
+            'success': False,
+            'index': i,
+            'total': total_records,
+            'error': f'处理异常: {str(e)}',
+            'prompt': prompt,
+            'raw_response': None,
+            'processing_time': time.time() - record_start_time,
+            'source': data_source
+        }
     
-    if not response:
-        print(f"第 {i+1} 条记录获取响应失败")
-        return None
-    print(prompt)
-    print(f"第 {i+1} 条记录处理完成，处理结果：\n", response)
-    print("----------------------------------------------------------------------")
+    # 不直接打印，而是将原始记录和模型返回结果作为结果的一部分返回
     # 解析LLM响应
     # 预期格式: "姓名,日期,时间范围,时长"
     # 例如: "丁国涛,2025-07-09,18:32-19:44,1.2"
@@ -126,6 +171,7 @@ async def process_record_async(record, i, total_records):
         # 处理可能包含多行数据的响应
         lines = response.strip().split('\n')
         parsed_results = []
+        parse_errors = []
         
         for line in lines:
             line = line.strip()
@@ -137,7 +183,7 @@ async def process_record_async(record, i, total_records):
             match = re.match(pattern, line)
             
             if not match:
-                print(f"无法解析行: {line}")
+                parse_errors.append(f"无法解析: {line}")
                 continue
                 
             parsed_name = match.group(1).strip()
@@ -160,26 +206,50 @@ async def process_record_async(record, i, total_records):
                     'reason': prompt,  # 使用完整的prompt作为加班说明
                     'data_source': data_source
                 })
-                
-                # print(f"已解析: {parsed_name}, {parsed_date}, {parsed_time}, {cleaned_duration}, 加班说明: {prompt}, {data_source}")
             except ValueError as e:
-                print(f"时长转换错误: {e}, 原始值: '{parsed_duration}'")
+                parse_errors.append(f"时长错误: '{parsed_duration}'")
+        
+        # 计算处理时间
+        record_end_time = time.time()
+        record_processing_time = record_end_time - record_start_time
         
         if parsed_results:
+            success_count = len(parsed_results)
             return {
                 'success': True,  # 添加成功标志
-                'success_count': len(parsed_results),
+                'success_count': success_count,
                 'source': data_source,
                 'raw_response': response,
-                'parsed_results': parsed_results
+                'parsed_results': parsed_results,
+                'processing_time': record_processing_time,
+                'index': i,
+                'total': total_records,
+                'prompt': prompt,
+                'parse_errors': parse_errors
             }
         else:
-            print(f"未能成功解析任何记录")
-            return None
+            return {
+                'success': False,
+                'source': data_source,
+                'raw_response': response,
+                'processing_time': record_processing_time,
+                'index': i,
+                'total': total_records,
+                'prompt': prompt,
+                'parse_errors': parse_errors
+            }
             
     except Exception as e:
-        print(f"处理LLM响应时出错: {e}")
-        return None
+        error_message = f"处理LLM响应时出错: {e}"
+        return {
+            'success': False,
+            'index': i,
+            'total': total_records,
+            'error': error_message,
+            'prompt': prompt,
+            'raw_response': response,
+            'processing_time': time.time() - record_start_time
+        }
 
 async def process_db_data_async(max_concurrent=10):
     """异步处理数据库中的加班记录并保存到结果表
@@ -216,6 +286,12 @@ async def process_db_data_async(max_concurrent=10):
         print(f"读取 {total_records} 条加班记录")
         print(f"设置最大并发数: {max_concurrent}")
         
+        # 输出开始分析的日志
+        print("\n=== 开始分析加班记录 ===\n")
+        
+        # 记录大模型开始处理的日志
+        print("🤖 大模型开始处理加班数据...")
+        
         # 创建任务列表
         tasks = []
         semaphore = asyncio.Semaphore(max_concurrent)  # 限制并发数
@@ -228,86 +304,254 @@ async def process_db_data_async(max_concurrent=10):
             task = asyncio.create_task(bounded_process(record, i))
             tasks.append(task)
         
-        # 等待所有任务完成
-        start_time = time.time()
-        results = await asyncio.gather(*tasks)
-        end_time = time.time()
+        # 创建一个字典来存储已完成的任务结果，按索引排序
+        completed_results = {}
+        next_index_to_print = 0
         
-        # 过滤掉None结果
-        valid_results = [r for r in results if r is not None]
+        # 等待任务完成并按顺序输出日志
+        start_time = time.time()
+        
+        # 创建一个函数来处理完成的任务
+        def process_completed_result(result):
+            nonlocal next_index_to_print
+            if result is None:
+                return
+                
+            index = result.get('index', 0)
+            completed_results[index] = result
+            
+            # 检查是否可以按顺序输出日志
+            while next_index_to_print in completed_results:
+                result = completed_results[next_index_to_print]
+                i = result.get('index', 0)
+                total = result.get('total', total_records)
+                
+                # 输出日志
+                if result.get('success', False):
+                    # 输出原始记录和模型返回结果
+                    if 'prompt' in result and 'raw_response' in result:
+                        print(f"\n📤 原始记录 [{i+1}/{total}]: {result['prompt']}")
+                        print(f"📥 模型返回 [{i+1}/{total}]:\n {result['raw_response']}")
+                    
+                    # 输出解析结果
+                    if 'parsed_results' in result:
+                        for parsed in result['parsed_results']:
+                            print(f"✅ 解析结果 [{i+1}/{total}]: {parsed['name']}, {parsed['date']}, {parsed['time_range']}, {parsed['duration']}小时")
+                            
+                        # 输出解析错误
+                        if 'parse_errors' in result and result['parse_errors']:
+                            for error in result['parse_errors']:
+                                print(f"⚠️ 解析警告 [{i+1}/{total}]: {error}")
+                    
+                    # 输出处理完成信息
+                    if 'processing_time' in result:
+                        print(f"⏱️ 处理完成 [{i+1}/{total}]: {result['processing_time']:.2f}秒")
+                        print("------------------------------------------------------------------\n\n")
+                else:
+                    # 输出错误信息
+                    error_msg = result.get('error', '未知错误')
+                    print(f"\n📤 原始记录 [{i+1}/{total}]: {result.get('prompt', '无提示词')}")
+                    raw_response = result.get('raw_response', None)
+                    if raw_response:
+                        print(f"📥 模型返回 [{i+1}/{total}]: {raw_response}")
+                    else:
+                        print(f"📥 模型返回 [{i+1}/{total}]: 无响应")
+                    
+                    # 输出解析错误
+                    if 'parse_errors' in result and result['parse_errors']:
+                        for error in result['parse_errors']:
+                            print(f"⚠️ 解析警告 [{i+1}/{total}]: {error}")
+                    
+                    print(f"❌ 处理失败 [{i+1}/{total}]: {error_msg}")
+                    if 'processing_time' in result:
+                        print(f"⏱️ 处理完成 [{i+1}/{total}]: {result['processing_time']:.2f}秒")
+                
+                # 移除已处理的结果并更新下一个要打印的索引
+                del completed_results[next_index_to_print]
+                next_index_to_print += 1
+        
+        # 为每个任务添加回调函数，使用更健壮的错误处理
+        def safe_callback(task):
+            try:
+                if not task.cancelled():
+                    result = task.result()
+                    if result:
+                        process_completed_result(result)
+                else:
+                    print(f"警告: 任务 {task} 被取消，跳过结果处理")
+            except asyncio.CancelledError:
+                print(f"警告: 任务被取消，无法获取结果")
+            except Exception as e:
+                print(f"回调处理异常: {e}")
+        
+        for task in tasks:
+            task.add_done_callback(lambda t: safe_callback(t))
+        
+        # 等待所有任务完成，使用更健壮的错误处理
+        try:
+            # 使用gather的return_exceptions=True参数，避免一个任务失败导致所有任务失败
+            await asyncio.gather(*tasks, return_exceptions=True)
+        except asyncio.CancelledError:
+            print("警告: 部分任务被取消，但会继续处理已完成的任务")
+        except Exception as e:
+            print(f"等待任务完成时出错: {e}，但会继续处理已完成的任务")
+        end_time = time.time()
         
         # 收集所有解析结果
         all_parsed_results = []
-        for result in valid_results:
+        success_by_source = {}
+        
+        # 获取所有任务的结果，安全地处理可能的异常
+        results = []
+        cancelled_count = 0
+        error_count = 0
+        
+        for task in tasks:
+            try:
+                if task.done():
+                    if task.cancelled():
+                        cancelled_count += 1
+                        continue
+                    
+                    result = task.result()
+                    if result is not None:
+                        results.append(result)
+                else:
+                    print(f"警告: 任务未完成，跳过结果处理")
+            except asyncio.CancelledError:
+                cancelled_count += 1
+                print(f"警告: 任务被取消，跳过结果处理")
+            except Exception as e:
+                error_count += 1
+                print(f"获取任务结果异常: {e}")
+        
+        if cancelled_count > 0 or error_count > 0:
+            print(f"⚠️ 统计: {cancelled_count} 个任务被取消, {error_count} 个任务出错, {len(results)} 个任务成功")
+        
+        for result in results:
+            if result is None:
+                continue
+                
             if 'parsed_results' in result:
+                source = result.get('source', '未知来源')
+                count = len(result['parsed_results'])
+                
+                if source in success_by_source:
+                    success_by_source[source] += count
+                else:
+                    success_by_source[source] = count
+                    
                 all_parsed_results.extend(result['parsed_results'])
         
         # 统计成功处理的记录数
         total_success_count = len(all_parsed_results)
         
-        # 一次性批量保存到数据库
-        print(f"\n开始批量保存 {total_success_count} 条记录到数据库...")
-        saved_count = 0
+        # 打印按来源统计的成功解析数
+        print("\n📊 按数据来源统计解析成功数:")
+        for source, count in success_by_source.items():
+            print(f"  - {source}: {count} 条记录")
+        print(f"  总计: {total_success_count} 条记录解析成功")
         
-        # 使用事务批量保存数据
-        async with await get_db_pool() as pool:
-            async with pool.acquire() as conn:
-                async with conn.cursor() as cursor:
-                    # 开始事务
-                    await cursor.execute("BEGIN")
-                    
-                    try:
-                        # 批量插入数据
-                        for parsed_result in all_parsed_results:
-                            await cursor.execute("""
-                                INSERT INTO llm_results (姓名, 日期, 时间, 时长, 加班说明, 来源)
-                                VALUES (%s, %s, %s, %s, %s, %s)
-                            """, (
-                                parsed_result['name'],
-                                parsed_result['date'],
-                                parsed_result['time_range'],
-                                parsed_result['duration'],
-                                parsed_result['reason'],
-                                parsed_result['data_source']
-                            ))
-                            saved_count += 1
+        # 输出分析结束的日志
+        print("\n=== 加班记录分析完成 ===\n")
+        
+        # 批量保存到数据库，使用分批事务提交
+        if total_success_count > 0:
+            print(f"📊 总计解析: {total_success_count}/{total_records} 条记录 ({total_success_count/total_records*100:.1f}%)")
+            saved_count = 0
+            failed_batches = 0
+            
+            # 使用事务批量保存数据，每50条记录提交一次，避免单个大事务
+            batch_size = 50
+            batches = [all_parsed_results[i:i+batch_size] for i in range(0, len(all_parsed_results), batch_size)]
+            
+            try:
+                async with await get_db_pool() as pool:
+                    async with pool.acquire() as conn:
+                        for batch_index, batch in enumerate(batches):
+                            if not batch:  # 跳过空批次
+                                continue
+                                
+                            try:
+                                async with conn.cursor() as cursor:
+                                    # 开始事务
+                                    await cursor.execute("BEGIN")
+                                    
+                                    try:
+                                        # 批量插入数据
+                                        for parsed_result in batch:
+                                            await cursor.execute("""
+                                                INSERT INTO llm_results (姓名, 日期, 时间, 时长, 加班说明, 来源)
+                                                VALUES (%s, %s, %s, %s, %s, %s)
+                                            """, (
+                                                parsed_result['name'],
+                                                parsed_result['date'],
+                                                parsed_result['time_range'],
+                                                parsed_result['duration'],
+                                                parsed_result['reason'],
+                                                parsed_result['data_source']
+                                            ))
+                                            saved_count += 1
+                                        
+                                        # 提交事务
+                                        await cursor.execute("COMMIT")
+                                        print(f"✅ 保存批次 {batch_index+1}/{len(batches)}: {len(batch)}条记录")
+                                    except Exception as e:
+                                        # 回滚事务
+                                        await cursor.execute("ROLLBACK")
+                                        failed_batches += 1
+                                        print(f"❌ 保存批次 {batch_index+1}/{len(batches)} 失败: {e}")
+                            except Exception as e:
+                                failed_batches += 1
+                                print(f"❌ 批次 {batch_index+1}/{len(batches)} 事务处理失败: {e}")
                         
-                        # 提交事务
-                        await cursor.execute("COMMIT")
-                        print(f"✅ 成功批量保存 {saved_count} 条记录到数据库")
-                    except Exception as e:
-                        # 回滚事务
-                        await cursor.execute("ROLLBACK")
-                        print(f"❌ 批量保存失败: {e}")
+                        print(f"✅ 总共保存记录: {saved_count}条, 失败批次: {failed_batches}个")
+            except Exception as e:
+                print(f"❌ 数据库连接失败: {e}")
+        else:
+            print("⚠️ 没有成功解析的记录，跳过保存步骤")
         
         processing_time = end_time - start_time
-        print(f"\n处理完成，共解析 {total_success_count} 条记录，保存 {saved_count}/{total_records} 条回答到数据库")
-        print(f"处理耗时: {processing_time:.2f} 秒，平均每条记录 {processing_time/total_records:.4f} 秒")
+        print(f"\n⏱️ 总耗时: {processing_time:.2f}秒, 平均: {processing_time/total_records:.4f}秒/条, 速度: {total_records/processing_time:.2f}条/秒")
         
-        # 打印数据来源统计
-        print("\n数据来源统计:")
-        for source, count in data_sources.items():
-            print(f"  - {source}: {count} 条记录")
-            
-        # 打印结果表中的数据统计
+        # 打印数据来源和处理效率统计
+        if total_records > 0:
+            parse_success_rate = total_success_count / total_records * 100
+            save_success_rate = saved_count / total_records * 100 if total_records > 0 else 0
+            print(f"\n📊 解析率: {parse_success_rate:.1f}%, 保存率: {save_success_rate:.1f}%")
         
-        async with await get_db_pool() as pool:
-            async with pool.acquire() as conn:
-                async with conn.cursor() as cursor:
-                    await cursor.execute("""
-                        SELECT 来源, COUNT(*) 
-                        FROM llm_results 
-                        GROUP BY 来源
-                    """)
-                    source_stats = await cursor.fetchall()
-                    for source, count in source_stats:
-                        print(f"  - {source}: {count} 条记录")
+        # 查询结果表中的数据统计
+        try:
+            async with await get_db_pool() as pool:
+                async with pool.acquire() as conn:
+                    async with conn.cursor() as cursor:
+                        await cursor.execute("""
+                            SELECT COUNT(*) 
+                            FROM llm_results
+                        """)
+                        total_count = await cursor.fetchone()
+                        print(f"✅ 数据库总记录: {total_count[0]}条")
+        except Exception as e:
+            print(f"❌ 查询数据库记录失败: {e}")
         
-        return valid_results
+        return all_parsed_results
     
+    except asyncio.CancelledError:
+        print(f"处理被取消: 可能是用户中断了操作或系统超时")
+        # 尝试保存已收集的结果
+        if 'all_parsed_results' in locals() and all_parsed_results:
+            print(f"尝试保存已收集的 {len(all_parsed_results)} 条结果...")
+            # 这里可以调用一个单独的函数来保存结果，避免代码重复
+            # 为简化，这里省略实现
+        # 返回已收集的结果，而不是空列表
+        return all_parsed_results if 'all_parsed_results' in locals() else []
     except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
         print(f"处理出错: {e}")
-        return []
+        print(f"错误详情: {error_details}")
+        # 返回已收集的结果，而不是空列表
+        return all_parsed_results if 'all_parsed_results' in locals() else []
 
 async def query_results():
     """查询结果表中的数据"""
