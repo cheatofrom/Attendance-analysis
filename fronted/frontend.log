@@ -1,0 +1,53 @@
+
+> attendance-analysis-frontend@0.0.0 dev
+> vite
+
+Port 3000 is in use, trying another one...
+
+  VITE v5.4.19  ready in 132 ms
+
+  ➜  Local:   http://localhost:3001/
+  ➜  Network: http://192.168.1.66:3001/
+  ➜  Network: http://172.29.0.1:3001/
+  ➜  Network: http://172.19.0.1:3001/
+  ➜  Network: http://172.25.0.1:3001/
+  ➜  Network: http://172.23.0.1:3001/
+  ➜  Network: http://172.17.0.1:3001/
+  ➜  Network: http://172.20.0.1:3001/
+  ➜  Network: http://172.31.0.1:3001/
+  ➜  Network: http://172.18.0.1:3001/
+  ➜  press h + enter to show help
+11:44:56 [vite] vite.config.ts changed, restarting server...
+11:44:56 [vite] server restarted.
+11:46:27 [vite] vite.config.ts changed, restarting server...
+11:46:27 [vite] server restarted.
+11:46:27 [vite] vite.config.ts changed, restarting server...
+11:46:27 [vite] server restarted.
+17:35:39 [vite] hmr update /src/App.tsx
+17:35:39 [vite] hmr update /src/App.tsx
+17:35:52 [vite] hmr update /src/components/ProcessControl.tsx
+17:35:52 [vite] hmr update /src/components/ProcessControl.tsx
+17:36:02 [vite] hmr update /src/App.tsx
+17:36:03 [vite] hmr update /src/components/ProcessControl.tsx
+17:36:16 [vite] hmr update /src/components/ProcessControl.tsx
+17:36:16 [vite] hmr update /src/components/ProcessControl.tsx
+09:33:05 [vite] hmr update /src/components/FileDownload.tsx
+09:33:06 [vite] hmr update /src/components/FileDownload.tsx
+17:12:22 [vite] hmr update /src/components/ProcessControl.tsx
+17:12:23 [vite] hmr update /src/components/ProcessControl.tsx
+17:50:35 [vite] hmr update /src/components/ProcessControl.tsx
+17:50:36 [vite] hmr update /src/components/ProcessControl.tsx
+17:56:05 [vite] hmr update /src/components/ProcessControl.tsx
+17:56:06 [vite] hmr update /src/components/ProcessControl.tsx
+17:56:21 [vite] hmr update /src/components/ProcessControl.tsx
+17:56:22 [vite] hmr update /src/components/ProcessControl.tsx
+17:59:49 [vite] hmr update /src/components/ProcessControl.tsx
+17:59:49 [vite] hmr update /src/components/ProcessControl.tsx
+18:00:07 [vite] hmr update /src/components/ProcessControl.tsx
+18:00:07 [vite] hmr update /src/components/ProcessControl.tsx
+18:01:55 [vite] hmr update /src/components/ProcessControl.tsx
+18:01:55 [vite] hmr update /src/components/ProcessControl.tsx
+18:02:28 [vite] hmr update /src/components/ProcessControl.tsx
+18:02:29 [vite] hmr update /src/components/ProcessControl.tsx
+18:02:50 [vite] hmr update /src/components/ProcessControl.tsx
+18:02:51 [vite] hmr update /src/components/ProcessControl.tsx

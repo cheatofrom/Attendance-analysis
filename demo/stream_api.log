@@ -1,0 +1,7 @@
+nohup: 忽略输入
+INFO:     Started server process [54408]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:6538 (Press CTRL+C to quit)
+INFO:     127.0.0.1:33444 - "GET /stream HTTP/1.1" 200 OK
+INFO:     172.19.0.7:45988 - "GET /stream HTTP/1.1" 200 OK

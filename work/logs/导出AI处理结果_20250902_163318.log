@@ -1,0 +1,6 @@
+/home/dell/mnt/ai-work/Attendance-analysis/work/export_llm_results.py:55: UserWarning: pandas only supports SQLAlchemy connectable (engine/connection) or database string URI or sqlite3 DBAPI2 connection. Other DBAPI2 objects are not tested. Please consider using SQLAlchemy.
+  df = pd.read_sql_query(query, conn)
+开始导出llm_results表数据...
+从llm_results表中读取到 619 条记录
+✅ AI处理结果已成功导出到: /home/dell/mnt/ai-work/Attendance-analysis/work/output/AI处理结果（只供核对）_20250902_165338.xlsx
+导出完成: /home/dell/mnt/ai-work/Attendance-analysis/work/output/AI处理结果（只供核对）_20250902_165338.xlsx

@@ -1,0 +1,18 @@
+🚀 [overwork_combine] 脚本开始执行 - 2025-08-28 17:37:01
+📋 总共需要执行 6 个主要步骤
+ℹ️  [17:37:01] 开始处理07月份加班数据
+🔄 [1/6] 处理飞书加班数据...
+📁 [17:37:01] 文件操作: 开始读取飞书加班数据 '../data/original/overwork01.xlsx'
+❌ [2025-08-28 17:37:01] 错误: 加班数据合并处理失败
+   └─ 异常类型: ValueError
+   └─ 异常详情: Excel file format cannot be determined, you must specify an engine manually.
+   └─ 堆栈跟踪:
+      File "/home/dell/mnt/ai-work/Attendance-analysis/work/overwork_combine.py", line 184, in main
+      File "/home/dell/mnt/ai-work/Attendance-analysis/work/overwork_combine.py", line 16, in process_feishu_data
+      File "/home/dell/miniconda3/envs/dd/lib/python3.10/site-packages/pandas/io/excel/_base.py", line 495, in read_excel
+      io = ExcelFile(
+      File "/home/dell/miniconda3/envs/dd/lib/python3.10/site-packages/pandas/io/excel/_base.py", line 1554, in __init__
+🎉 [overwork_combine] 脚本执行完成 - 2025-08-28 17:37:01
+⏱️  总执行时间: 0.0秒
+📈 完成步骤: 0/6
+📝 执行摘要: 脚本执行过程中发生错误

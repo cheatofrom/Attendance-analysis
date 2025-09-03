@@ -1,0 +1,18 @@
+nohup: 忽略输入
+INFO:     Started server process [1664702]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8911 (Press CTRL+C to quit)
+INFO:     172.19.0.3:54820 - "POST /update_config HTTP/1.1" 200 OK
+INFO:     172.19.0.3:55504 - "POST /update_config HTTP/1.1" 200 OK
+INFO:     172.19.0.3:50096 - "POST /update_config HTTP/1.1" 200 OK
+INFO:     172.19.0.3:40756 - "POST /update_config HTTP/1.1" 200 OK
+INFO:     172.19.0.7:56004 - "POST /update_config HTTP/1.1" 200 OK
+INFO:     172.19.0.7:53568 - "POST /update_config HTTP/1.1" 200 OK
+INFO:     172.19.0.7:35124 - "POST /update_config HTTP/1.1" 200 OK
+INFO:     172.19.0.7:59840 - "POST /update_config HTTP/1.1" 200 OK
+INFO:     172.19.0.7:53188 - "POST /update_config HTTP/1.1" 200 OK
+INFO:     172.19.0.7:46016 - "POST /update_config HTTP/1.1" 200 OK
+INFO:     172.19.0.7:51562 - "POST /update_config HTTP/1.1" 200 OK
+INFO:     172.19.0.7:49150 - "POST /update_config HTTP/1.1" 200 OK
+INFO:     172.19.0.7:48760 - "POST /update_config HTTP/1.1" 200 OK
