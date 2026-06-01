@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# 日志
+*.log
+work/logs/
+
+# node_modules
+fronted/node_modules/
+
+# 输出文件（生成的报表）
+work/output/
+
+# 训练数据/模型
+work/train/
+
+# 原始数据（上传的Excel）
+data/original/
+
+# 环境
+.env
+*.yml
+
+# IDE
+.trae/
+.claude/
