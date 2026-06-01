@@ -16,7 +16,7 @@ def process_feishu_data():
     df = pd.read_excel(file_path, skiprows=1)
     logger.log_info(f"飞书数据读取完成", f"原始数据: {df.shape[0]}行 × {df.shape[1]}列")
     
-    columns = ['发起人姓名',  '开始时间', '结束时间', '出差总时长（天）', '出差事由','申请状态', '同行人', '同行人.1']
+    columns = ['发起人姓名',  '开始时间', '结束时间', '出差总时长（天）','出差事由','申请状态', '同行人', '同行人.1']
     result_df = df[columns].copy()
     logger.log_info(f"飞书数据字段提取完成", f"提取{len(columns)}个关键字段")
     

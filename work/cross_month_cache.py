@@ -151,13 +151,12 @@ def get_cached_records(conn, record_type=None):
         
         query = """
             SELECT * FROM cross_month_cache 
-            WHERE processed = FALSE
         """
         
         params = []
         
         if record_type:
-            query += " AND record_type = %s"
+            query += " WHERE record_type = %s"
             params.append(record_type)
         
         cursor.execute(query, params)
@@ -275,6 +274,7 @@ def main():
         
     except Exception as e:
         flush_print(f"❌ 程序执行出错: {e}")
+        conn.rollback()  # 添加事务回滚，避免事务中止错误
     finally:
         cursor.close()
         conn.close()

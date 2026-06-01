@@ -1,0 +1,19 @@
+🚀 [出差数据合并处理] 脚本开始执行 - 2025-09-06 08:43:28
+📋 总共需要执行 6 个主要步骤
+🔄 [1/6] 处理飞书出差数据...
+📁 [08:43:28] 文件操作: 开始读取飞书出差数据 '../data/original/business01.xlsx'
+ℹ️  [08:43:28] 飞书数据读取完成
+   └─ 原始数据: 48行 × 36列
+❌ [2025-09-06 08:43:28] 错误: 出差数据合并处理失败
+   └─ 异常类型: KeyError
+   └─ 异常详情: "['出差总时长（天）', '出差事由', '同行人', '同行人.1'] not in index"
+   └─ 堆栈跟踪:
+      File "/home/dell/mnt/ai-work/Attendance-analysis/work/business_combine.py", line 178, in main
+      File "/home/dell/mnt/ai-work/Attendance-analysis/work/business_combine.py", line 20, in process_feishu_data
+      File "/home/dell/miniconda3/envs/dd/lib/python3.10/site-packages/pandas/core/frame.py", line 4108, in __getitem__
+      File "/home/dell/miniconda3/envs/dd/lib/python3.10/site-packages/pandas/core/indexes/base.py", line 6200, in _get_indexer_strict
+      File "/home/dell/miniconda3/envs/dd/lib/python3.10/site-packages/pandas/core/indexes/base.py", line 6252, in _raise_if_missing
+🎉 [出差数据合并处理] 脚本执行完成 - 2025-09-06 08:43:28
+⏱️  总执行时间: 0.1秒
+📈 完成步骤: 0/6
+📝 执行摘要: 脚本执行过程中发生错误

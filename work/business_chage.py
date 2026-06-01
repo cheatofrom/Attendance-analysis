@@ -70,18 +70,38 @@ def update_attendance_record(cursor, name, start_date, end_date, business_reason
     if colleagues and not pd.isna(colleagues):
         business_info = f"出差({business_reason})[同行人:{colleagues}]"
     
-    # 构建更新语句并直接更新
+    # 构建更新语句并追加更新
     for day in range(start_day, end_day + 1):
         column_name = f'第{day}天'
         
-        # 直接更新考勤状态
+        # 查询当前记录
+        check_query = sql.SQL("""
+            SELECT {} FROM attendance_result 
+            WHERE 姓名 = %s
+        """).format(sql.Identifier(column_name))
+        
+        cursor.execute(check_query, (name,))
+        result = cursor.fetchone()
+        
+        if not result:
+            print(f"警告: 未找到员工 {name} 的记录")
+            continue
+            
+        current_value = result[0]
+        
+        # 如果当前值为空，直接设置；否则追加
+        new_value = business_info
+        if current_value and not pd.isna(current_value):
+            new_value = f"{current_value}\n{business_info}"
+        
+        # 更新记录
         update_query = sql.SQL("""
             UPDATE attendance_result 
             SET {} = %s
             WHERE 姓名 = %s
         """).format(sql.Identifier(column_name))
         
-        cursor.execute(update_query, (business_info, name))
+        cursor.execute(update_query, (new_value, name))
 
 def update_colleague_attendance(cursor, name, start_date, end_date, business_reason, initiator):
     """更新同行人的考勤记录"""
@@ -125,11 +145,11 @@ def update_colleague_attendance(cursor, name, start_date, end_date, business_rea
     # 构建出差信息，包含发起人
     business_info = f"出差(同行)[发起人:{initiator}]"
     
-    # 构建更新语句并直接更新
+    # 构建更新语句并追加更新
     for day in range(start_day, end_day + 1):
         column_name = f'第{day}天'
         
-        # 检查当前同行人在该日期是否已有出差记录
+        # 检查当前同行人在该日期是否已有记录
         check_query = sql.SQL("""
             SELECT {} FROM attendance_result 
             WHERE 姓名 = %s
@@ -138,16 +158,32 @@ def update_colleague_attendance(cursor, name, start_date, end_date, business_rea
         cursor.execute(check_query, (name,))
         current_status = cursor.fetchone()
         
-        # 如果没有记录或者当前记录不包含出差信息，则更新
-        if not current_status or current_status[0] is None or '出差' not in str(current_status[0]):
-            # 直接更新考勤状态
+        if not current_status:
+            print(f"警告: 未找到员工 {name} 的记录")
+            continue
+            
+        current_value = current_status[0]
+        
+        # 如果当前值为空，直接设置；否则追加
+        # 但只有当当前记录不包含出差信息时才更新
+        if current_value is None or pd.isna(current_value):
+            new_value = business_info
             update_query = sql.SQL("""
                 UPDATE attendance_result 
                 SET {} = %s
                 WHERE 姓名 = %s
             """).format(sql.Identifier(column_name))
             
-            cursor.execute(update_query, (business_info, name))
+            cursor.execute(update_query, (new_value, name))
+        elif '出差' not in str(current_value):
+            new_value = f"{current_value}\n{business_info}"
+            update_query = sql.SQL("""
+                UPDATE attendance_result 
+                SET {} = %s
+                WHERE 姓名 = %s
+            """).format(sql.Identifier(column_name))
+            
+            cursor.execute(update_query, (new_value, name))
 
 def process_colleagues(cursor, name, start_time, end_time, reason, colleagues):
     """处理同行人的考勤记录"""

@@ -1,0 +1,8 @@
+❌ 获取缓存记录时出错: syntax error at or near "AND"
+LINE 3:          AND record_type = 'freework'
+                 ^
+
+✅ 获取到 0 条缓存的跨月请假记录
+✅ 所有缓存的跨月请假记录处理完成
+❌ 程序执行出错: current transaction is aborted, commands ignored until end of transaction block
+

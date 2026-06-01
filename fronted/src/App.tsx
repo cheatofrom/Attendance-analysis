@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Layout, Typography, Space, Divider } from 'antd'
+import { Layout, Typography, Space } from 'antd'
 import FileUpload from './components/FileUpload'
 import ConfigForm from './components/ConfigForm'
 import ProcessControl from './components/ProcessControl'

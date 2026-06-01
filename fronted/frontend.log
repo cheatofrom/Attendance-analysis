@@ -51,3 +51,370 @@ Port 3000 is in use, trying another one...
 18:02:29 [vite] hmr update /src/components/ProcessControl.tsx
 18:02:50 [vite] hmr update /src/components/ProcessControl.tsx
 18:02:51 [vite] hmr update /src/components/ProcessControl.tsx
+17:11:51 [vite] page reload src/main.tsx
+17:11:51 [vite] page reload src/main.tsx
+17:11:51 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:11:52 [vite] Internal server error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/main.tsx:6:31
+  5  |  import "./index.css";
+  6  |  import { ConfigProvider } from "antd";
+  7  |  import { App as AntdApp } from "@ant-design/compatible";
+     |                                  ^
+  8  |  import zhCN from "antd/locale/zh_CN";
+  9  |  import "dayjs/locale/zh-cn";
+      at TransformPluginContext._formatError (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49258:41)
+      at TransformPluginContext.error (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49253:16)
+      at normalizeUrl (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64291:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64423:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64350:7)
+      at async PluginContainer.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49099:18)
+      at async loadAndTransform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:51977:27)
+      at async viteTransformMiddleware (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:62105:24)
+17:11:52 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:09 [vite] hmr update /src/App.tsx
+17:12:09 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:09 [vite] Pre-transform error: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/App.tsx: 'return' outside of function. (72:2)
+
+  70 |   const canStartProcess = uploadedFiles.length === 7 && configData !== null
+  71 |
+> 72 |   return (
+     |   ^
+  73 |     <div className="app-container">
+  74 |       <div className="main-content">
+  75 |         <div className="header">
+17:12:09 [vite] Internal server error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/main.tsx:6:31
+  5  |  import "./index.css";
+  6  |  import { ConfigProvider } from "antd";
+  7  |  import { App as AntdApp } from "@ant-design/compatible";
+     |                                  ^
+  8  |  import zhCN from "antd/locale/zh_CN";
+  9  |  import "dayjs/locale/zh-cn";
+      at TransformPluginContext._formatError (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49258:41)
+      at TransformPluginContext.error (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49253:16)
+      at normalizeUrl (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64291:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64423:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64350:7)
+      at async PluginContainer.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49099:18)
+      at async loadAndTransform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:51977:27)
+      at async viteTransformMiddleware (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:62105:24)
+17:12:09 [vite] Pre-transform error: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/App.tsx: 'return' outside of function. (72:2)
+
+  70 |   const canStartProcess = uploadedFiles.length === 7 && configData !== null
+  71 |
+> 72 |   return (
+     |   ^
+  73 |     <div className="app-container">
+  74 |       <div className="main-content">
+  75 |         <div className="header">
+17:12:09 [vite] hmr update /src/App.tsx
+17:12:09 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:09 [vite] Pre-transform error: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/App.tsx: 'return' outside of function. (72:2)
+
+  70 |   const canStartProcess = uploadedFiles.length === 7 && configData !== null
+  71 |
+> 72 |   return (
+     |   ^
+  73 |     <div className="app-container">
+  74 |       <div className="main-content">
+  75 |         <div className="header">
+17:12:31 [vite] hmr update /src/App.tsx
+17:12:31 [vite] Internal server error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/main.tsx:6:31
+  5  |  import "./index.css";
+  6  |  import { ConfigProvider } from "antd";
+  7  |  import { App as AntdApp } from "@ant-design/compatible";
+     |                                  ^
+  8  |  import zhCN from "antd/locale/zh_CN";
+  9  |  import "dayjs/locale/zh-cn";
+      at TransformPluginContext._formatError (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49258:41)
+      at TransformPluginContext.error (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49253:16)
+      at normalizeUrl (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64291:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64423:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64350:7)
+      at async PluginContainer.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49099:18)
+      at async loadAndTransform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:51977:27)
+      at async viteTransformMiddleware (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:62105:24)
+17:12:31 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:31 [vite] hmr update /src/App.tsx
+17:12:31 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:31 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:31 [vite] Internal server error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/main.tsx:6:31
+  5  |  import "./index.css";
+  6  |  import { ConfigProvider } from "antd";
+  7  |  import { App as AntdApp } from "@ant-design/compatible";
+     |                                  ^
+  8  |  import zhCN from "antd/locale/zh_CN";
+  9  |  import "dayjs/locale/zh-cn";
+      at TransformPluginContext._formatError (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49258:41)
+      at TransformPluginContext.error (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49253:16)
+      at normalizeUrl (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64291:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64423:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64350:7)
+      at async PluginContainer.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49099:18)
+      at async loadAndTransform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:51977:27)
+      at async viteTransformMiddleware (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:62105:24)
+17:12:31 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:42 [vite] hmr update /src/App.tsx
+17:12:42 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:42 [vite] Internal server error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/main.tsx:6:31
+  5  |  import "./index.css";
+  6  |  import { ConfigProvider } from "antd";
+  7  |  import { App as AntdApp } from "@ant-design/compatible";
+     |                                  ^
+  8  |  import zhCN from "antd/locale/zh_CN";
+  9  |  import "dayjs/locale/zh-cn";
+      at TransformPluginContext._formatError (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49258:41)
+      at TransformPluginContext.error (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49253:16)
+      at normalizeUrl (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64291:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64423:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64350:7)
+      at async PluginContainer.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49099:18)
+      at async loadAndTransform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:51977:27)
+      at async viteTransformMiddleware (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:62105:24)
+17:12:42 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:42 [vite] hmr update /src/App.tsx
+17:12:42 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:42 [vite] Internal server error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/main.tsx:6:31
+  5  |  import "./index.css";
+  6  |  import { ConfigProvider } from "antd";
+  7  |  import { App as AntdApp } from "@ant-design/compatible";
+     |                                  ^
+  8  |  import zhCN from "antd/locale/zh_CN";
+  9  |  import "dayjs/locale/zh-cn";
+      at TransformPluginContext._formatError (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49258:41)
+      at TransformPluginContext.error (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49253:16)
+      at normalizeUrl (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64291:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64423:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64350:7)
+      at async PluginContainer.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49099:18)
+      at async loadAndTransform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:51977:27)
+      at async viteTransformMiddleware (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:62105:24)
+17:12:42 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:47 [vite] .env changed, restarting server...
+17:12:47 [vite] .env changed, restarting server...
+17:12:47 [vite] page reload vite.config.ts.timestamp-1757149967627-4f8189c06c38.mjs
+17:12:47 [vite] server restarted.
+Error: The following dependencies are imported but could not be resolved:
+
+  @ant-design/compatible (imported by /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/main.tsx)
+
+Are they installed?
+    at file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:50669:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:50174:26
+17:12:48 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:48 [vite] Internal server error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/main.tsx:6:31
+  5  |  import "./index.css";
+  6  |  import { ConfigProvider } from "antd";
+  7  |  import { App as AntdApp } from "@ant-design/compatible";
+     |                                  ^
+  8  |  import zhCN from "antd/locale/zh_CN";
+  9  |  import "dayjs/locale/zh-cn";
+      at TransformPluginContext._formatError (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49258:41)
+      at TransformPluginContext.error (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49253:16)
+      at normalizeUrl (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64291:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64423:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64350:7)
+      at async PluginContainer.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49099:18)
+      at async loadAndTransform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:51977:27)
+      at async viteTransformMiddleware (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:62105:24)
+17:12:48 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:55 [vite] hmr update /src/components/ASRComponent.tsx
+17:12:55 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:55 [vite] Internal server error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/main.tsx:6:31
+  5  |  import "./index.css";
+  6  |  import { ConfigProvider } from "antd";
+  7  |  import { App as AntdApp } from "@ant-design/compatible";
+     |                                  ^
+  8  |  import zhCN from "antd/locale/zh_CN";
+  9  |  import "dayjs/locale/zh-cn";
+      at TransformPluginContext._formatError (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49258:41)
+      at TransformPluginContext.error (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49253:16)
+      at normalizeUrl (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64291:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64423:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64350:7)
+      at async PluginContainer.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49099:18)
+      at async loadAndTransform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:51977:27)
+      at async viteTransformMiddleware (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:62105:24)
+17:12:55 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:55 [vite] hmr update /src/components/ASRComponent.tsx
+17:12:55 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:12:55 [vite] Internal server error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/main.tsx:6:31
+  5  |  import "./index.css";
+  6  |  import { ConfigProvider } from "antd";
+  7  |  import { App as AntdApp } from "@ant-design/compatible";
+     |                                  ^
+  8  |  import zhCN from "antd/locale/zh_CN";
+  9  |  import "dayjs/locale/zh-cn";
+      at TransformPluginContext._formatError (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49258:41)
+      at TransformPluginContext.error (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49253:16)
+      at normalizeUrl (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64291:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64423:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64350:7)
+      at async PluginContainer.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49099:18)
+      at async loadAndTransform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:51977:27)
+      at async viteTransformMiddleware (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:62105:24)
+17:12:55 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:13:06 [vite] page reload src/env.d.ts
+17:13:07 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:13:07 [vite] Internal server error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/main.tsx:6:31
+  5  |  import "./index.css";
+  6  |  import { ConfigProvider } from "antd";
+  7  |  import { App as AntdApp } from "@ant-design/compatible";
+     |                                  ^
+  8  |  import zhCN from "antd/locale/zh_CN";
+  9  |  import "dayjs/locale/zh-cn";
+      at TransformPluginContext._formatError (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49258:41)
+      at TransformPluginContext.error (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49253:16)
+      at normalizeUrl (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64291:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64423:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64350:7)
+      at async PluginContainer.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49099:18)
+      at async loadAndTransform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:51977:27)
+      at async viteTransformMiddleware (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:62105:24)
+17:13:07 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:13:26 [vite] page reload README.md
+17:13:26 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:13:26 [vite] Internal server error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/main.tsx:6:31
+  5  |  import "./index.css";
+  6  |  import { ConfigProvider } from "antd";
+  7  |  import { App as AntdApp } from "@ant-design/compatible";
+     |                                  ^
+  8  |  import zhCN from "antd/locale/zh_CN";
+  9  |  import "dayjs/locale/zh-cn";
+      at TransformPluginContext._formatError (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49258:41)
+      at TransformPluginContext.error (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49253:16)
+      at normalizeUrl (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64291:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64423:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64350:7)
+      at async PluginContainer.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49099:18)
+      at async loadAndTransform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:51977:27)
+      at async viteTransformMiddleware (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:62105:24)
+17:13:26 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:17:45 [vite] .env changed, restarting server...
+17:17:45 [vite] page reload vite.config.ts.timestamp-1757150265501-d000e4a7b503e.mjs
+17:17:45 [vite] server restarted.
+17:17:45 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:17:45 [vite] Internal server error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/main.tsx:6:31
+  5  |  import "./index.css";
+  6  |  import { ConfigProvider } from "antd";
+  7  |  import { App as AntdApp } from "@ant-design/compatible";
+     |                                  ^
+  8  |  import zhCN from "antd/locale/zh_CN";
+  9  |  import "dayjs/locale/zh-cn";
+      at TransformPluginContext._formatError (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49258:41)
+      at TransformPluginContext.error (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49253:16)
+      at normalizeUrl (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64291:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64423:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64350:7)
+      at async PluginContainer.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49099:18)
+      at async loadAndTransform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:51977:27)
+      at async viteTransformMiddleware (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:62105:24)
+17:17:45 [vite] hmr update /src/App.tsx
+17:17:45 [vite] hmr update /src/components/ASRComponent.tsx
+17:17:45 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:17:46 [vite] page reload src/main.tsx
+17:17:46 [vite] hmr update /src/components/ASRComponent.tsx
+17:17:46 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:17:46 [vite] Internal server error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/main.tsx:6:31
+  5  |  import "./index.css";
+  6  |  import { ConfigProvider } from "antd";
+  7  |  import { App as AntdApp } from "@ant-design/compatible";
+     |                                  ^
+  8  |  import zhCN from "antd/locale/zh_CN";
+  9  |  import "dayjs/locale/zh-cn";
+      at TransformPluginContext._formatError (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49258:41)
+      at TransformPluginContext.error (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49253:16)
+      at normalizeUrl (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64291:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64423:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64350:7)
+      at async PluginContainer.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49099:18)
+      at async loadAndTransform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:51977:27)
+      at async viteTransformMiddleware (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:62105:24)
+17:17:46 [vite] Pre-transform error: Failed to resolve import "@ant-design/compatible" from "src/main.tsx". Does the file exist?
+17:17:58 [vite] page reload src/main.tsx
+17:17:58 [vite] hmr update /src/App.tsx
+17:17:58 [vite] Pre-transform error: Failed to resolve import "./components/ASRComponent" from "src/App.tsx". Does the file exist?
+17:17:58 [vite] Internal server error: Failed to resolve import "./components/ASRComponent" from "src/App.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/dell/mnt/ai-work/Attendance-analysis/fronted/src/App.tsx:7:25
+  22 |  import ProcessControl from "./components/ProcessControl";
+  23 |  import FileDownload from "./components/FileDownload";
+  24 |  import ASRComponent from "./components/ASRComponent";
+     |                            ^
+  25 |  import "./App.css";
+  26 |  const { Content } = Layout;
+      at TransformPluginContext._formatError (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49258:41)
+      at TransformPluginContext.error (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49253:16)
+      at normalizeUrl (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64291:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64423:39
+      at async Promise.all (index 9)
+      at async TransformPluginContext.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64350:7)
+      at async PluginContainer.transform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49099:18)
+      at async loadAndTransform (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:51977:27)
+      at async viteTransformMiddleware (file:///home/dell/mnt/ai-work/Attendance-analysis/fronted/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:62105:24)
+17:17:58 [vite] .env changed, restarting server...
+17:17:58 [vite] hmr update /src/components/ASRComponent.tsx
+17:17:58 [vite] page reload src/services/WebSocketService.ts
+17:17:58 [vite] server restarted.
+17:17:58 [vite] Pre-transform error: Failed to resolve import "./components/ASRComponent" from "src/App.tsx". Does the file exist?
+17:18:13 [vite] page reload src/App.tsx
+17:18:16 [vite] page reload src/App.tsx
+17:18:29 [vite] page reload src/App.tsx
+17:22:10 [vite] page reload src/App.tsx
+17:22:11 [vite] page reload src/App.tsx
+17:22:22 [vite] page reload src/main.tsx
+17:22:22 [vite] page reload src/main.tsx
+17:22:33 [vite] page reload src/main.tsx
+17:22:33 [vite] page reload src/main.tsx
